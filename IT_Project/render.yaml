@@ -1,0 +1,46 @@
+services:
+  - type: web
+    name: farmlink-web
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health.php
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DB_HOST
+        fromService:
+          type: pserv
+          name: farmlink-db
+          property: host
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_NAME
+        value: farmlink
+      - key: DB_USER
+        value: farmlink
+      - key: DB_PASS
+        generateValue: true
+
+  - type: pserv
+    name: farmlink-db
+    runtime: image
+    image:
+      url: docker.io/library/mysql:8.4
+    plan: free
+    envVars:
+      - key: MYSQL_DATABASE
+        value: farmlink
+      - key: MYSQL_USER
+        value: farmlink
+      - key: MYSQL_PASSWORD
+        fromService:
+          type: web
+          name: farmlink-web
+          envVarKey: DB_PASS
+      - key: MYSQL_ROOT_PASSWORD
+        generateValue: true
+    disk:
+      name: farmlink-mysql-data
+      mountPath: /var/lib/mysql
+      sizeGB: 10

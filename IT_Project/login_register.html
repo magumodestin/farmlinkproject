@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FarmLink | Register & Login</title>
+  <link rel="stylesheet" href="login_register.css">
+</head>
+<body>
+
+<div class="brand-row">
+  <a href="home.html" class="logo"> FarmLink</a>
+</div>
+
+<div class="form-card">
+
+  <div id="registerPanel">
+    <h2>Register</h2>
+    <form id="registerForm">
+      <div class="reg-photo-wrap">
+        <div class="reg-photo-avatar" id="regPhotoAvatar">📷</div>
+        <button type="button" class="reg-photo-edit" id="regPhotoBtn" aria-label="Add profile photo">📷</button>
+        <input type="file" accept="image/png,image/jpeg,image/webp" id="regPhotoInput" style="display:none">
+      </div>
+      <p class="reg-photo-hint">Add a profile photo (optional) — you can also do this later.</p>
+      <div class="form-group">
+        <label for="accountRole">Account type</label>
+        <select id="accountRole" name="accountRole" required>
+          <option value="buyer">Buyer</option>
+          <option value="seller">Seller / Farmer</option>
+          <option value="driver">Delivery Driver</option>
+        </select>
+        <small id="roleHint">Buy products and manage orders.</small>
+      </div>
+      <div class="form-group">
+        <label for="fullname">Full Name</label>
+        <input type="text" id="fullname" name="fullname" placeholder="Your full name.." autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="your@email.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" name="phone" placeholder="011 555 0148" autocomplete="tel" inputmode="numeric">
+        <div id="phoneErrorMsg" class="error-text"></div>
+      </div>
+ 
+      <div class="form-group">
+        <label for="regPassword">Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="regPassword" name="password" placeholder="••••••••" autocomplete="new-password">
+          <button type="button" class="toggle-password" data-target="regPassword" aria-label="Show/hide password">
+            👁️
+          </button>
+        </div>
+      </div>
+      <div id="sellerVerification" class="verification-panel hidden-panel">
+        <h3>🌾 Seller verification</h3>
+        <p>Seller accounts need verification before products can be listed.</p>
+        <div class="form-group"><label for="sellerId">ID / business reference</label><input id="sellerId" placeholder="Verification reference"></div>
+        <div class="form-group"><label for="farmLocation">Farm / business location</label><input id="farmLocation" placeholder="Town / area"></div>
+        <label class="check-row"><input type="checkbox" id="sellerDeclaration"> I confirm that the seller information is accurate.</label>
+      </div>
+      <div id="driverVerification" class="verification-panel hidden-panel">
+        <h3>🚚 Driver & vehicle verification</h3>
+        <p>Driver accounts need profile, vehicle and document checks before accepting jobs.</p>
+        <div class="form-group"><label for="vehicleMake">Vehicle make & model</label><input id="vehicleMake" placeholder="e.g. Toyota Corolla"></div>
+        <div class="form-group"><label for="vehicleYear">Vehicle year</label><input id="vehicleYear" type="number" min="1990" max="2035" placeholder="2022"></div>
+        <div class="form-group"><label for="vehiclePlate">Vehicle registration</label><input id="vehiclePlate" placeholder="ABC 123 GP"></div>
+        <div class="form-group"><label for="driverArea">Service area</label><input id="driverArea" placeholder="Pretoria / Centurion"></div>
+
+        <h4 class="verification-subhead">📄 Required documents</h4>
+        <div class="form-group">
+          <label for="driverLicenceDoc">Copy of Driver's Licence</label>
+          <input type="file" id="driverLicenceDoc" accept="image/*,.pdf">
+        </div>
+        <div class="form-group">
+          <label for="prdpDoc">Professional Driving Permit (PrDP) <span class="field-optional">if required</span></label>
+          <input type="file" id="prdpDoc" accept="image/*,.pdf">
+        </div>
+        <div class="form-group">
+          <label for="proofOfAddressDoc">Proof of Address</label>
+          <input type="file" id="proofOfAddressDoc" accept="image/*,.pdf">
+        </div>
+        <div class="form-group">
+          <label for="insuranceDoc">Insurance Certificate <span class="field-optional">if using own vehicle</span></label>
+          <input type="file" id="insuranceDoc" accept="image/*,.pdf">
+        </div>
+
+        <h4 class="verification-subhead">💳 Employment & payment setup</h4>
+        <div class="form-group">
+          <label for="drivingExperience">Previous Driving/Delivery Experience <span class="field-optional">optional</span></label>
+          <textarea id="drivingExperience" rows="2" placeholder="e.g. 2 years with a local courier company"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="bankAccountDetails">Bank Account Details for Payment</label>
+          <input id="bankAccountDetails" placeholder="Bank name, account number, branch code">
+        </div>
+        <div class="form-group">
+          <label for="taxNumber">Tax Number <span class="field-optional">if contracting</span></label>
+          <input id="taxNumber" placeholder="e.g. 0123456789">
+        </div>
+
+        <label class="check-row"><input type="checkbox" id="driverDeclaration"> I confirm the vehicle and driver details are accurate.</label>
+      </div>
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm password">
+          <button type="button" class="toggle-password" data-target="confirmPassword" aria-label="Show/hide password">
+            👁️
+          </button>
+        </div>
+        <div id="passwordMatchMsg" class="error-text"></div>
+      </div>
+      <button type="submit" class="btn-submit" id="registerBtn">Register</button>
+      <div id="registerFeedback" class="feedback" style="display: none;"></div>
+    </form>
+    <div class="toggle-area">
+      Already a member?
+      <button type="button" class="toggle-link" id="switchToLoginBtn">Login</button>
+    </div>
+  </div>
+  <div id="verifyPanel" class="hidden-panel">
+    <h2>Check your email</h2>
+    <p>We sent a confirmation link to:</p>
+    <strong id="verifyEmailLabel"></strong>
+    <p>Click the link in that email to finish creating your account. This page will continue automatically once you do — you can come back to this tab afterward.</p>
+    <button type="button" class="toggle-link" id="resendCodeBtn">Resend email</button>
+    <div id="verifyFeedback" class="feedback" style="display:none"></div>
+    <div class="toggle-area">
+      <button type="button" class="toggle-link" id="backToLoginBtn">Back to Login</button>
+    </div>
+  </div>
+
+  <div id="loginPanel" class="hidden-panel">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="loginUsername">Email</label>
+        <input type="email" id="loginUsername" name="username" placeholder="your@email.com" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label for="loginPassword">Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="loginPassword" name="password" placeholder="••••••••" autocomplete="current-password">
+          <button type="button" class="toggle-password" data-target="loginPassword" aria-label="Show/hide password">
+            👁️
+          </button>
+        </div>
+      </div>
+    <div class='fogort-pass'>
+      <a href="forgotpass.html" class="fogort-password">Forgot Password</a>
+    </div>
+      <button type="submit" class="btn-submit" id="loginBtn">Login</button>
+      <div id="loginFeedback" class="feedback" style="display: none;"></div>
+
+    </form>
+    <div class="toggle-area">
+      Don't have an account?
+      <button type="button" class="toggle-link" id="switchToRegisterBtn">Create account</button>
+    </div>
+  </div>
+
+</div>
+<script src="local-store.js"></script>
+<script src="theme.js"></script>
+<script src="sound-fx.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabaseClient.js"></script>
+<script src="login_register.js"></script>
+</body>
+</html>

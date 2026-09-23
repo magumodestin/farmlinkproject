@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FarmLink - Driver Dashboard</title>
+<link rel="stylesheet" href="home.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  /* Driver dashboard styles (this page only — profile chip / dropdown now in home.css) */
+  .avail-toggle{display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;border:1px solid #d9e6dc;background:#fff;cursor:pointer;font-weight:600;font-size:13px;}
+  .avail-toggle .dot{width:9px;height:9px;border-radius:50%;background:#94a3b8;}
+  .avail-toggle.online{background:#eefbf1;border-color:#bfe8cc;color:#166534;}
+  .avail-toggle.online .dot{background:#16a34a;box-shadow:0 0 0 3px #d9f5e2;}
+
+  .welcome-banner{background:#eefbf1;border:1px solid #d9efdd;color:#1f5030;border-radius:14px;padding:14px 20px;margin:18px 5% 0;font-size:14.5px;}
+  .welcome-banner strong{color:#178a44;}
+
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin:22px 0;}
+  .stat-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;}
+  .stat-card .stat-label{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
+  .stat-card .stat-value{font-size:26px;font-weight:800;margin-top:6px;}
+  .stat-card .stat-sub{font-size:12px;color:var(--muted);margin-top:4px;}
+
+  .status-card{border-radius:18px;padding:20px 22px;border:1px solid var(--border);margin:22px 0;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;}
+  .status-card.pending{background:#fff8e6;border-color:#f4dfa0;}
+  .status-card.approved{background:#eefbf1;border-color:#bfe8cc;}
+  .status-card.rejected{background:#fdecec;border-color:#f3bcbc;}
+  .status-card h3{margin:0 0 4px;}
+  .status-card p{color:var(--muted);font-size:13.5px;margin:0;}
+
+  .section-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;margin:22px 0;}
+  .section-card h2{font-size:18px;margin-bottom:4px;}
+  .section-card .card-sub{color:var(--muted);font-size:13px;margin-bottom:16px;}
+
+  .job-card{border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-bottom:12px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center;}
+  .job-route{font-weight:700;font-size:14.5px;}
+  .job-meta{color:var(--muted);font-size:12.5px;margin-top:4px;}
+  .job-payout{font-weight:800;font-size:18px;color:#16a34a;}
+  .job-actions{display:flex;gap:8px;}
+
+  .stepper{display:flex;align-items:center;margin:18px 0;flex-wrap:wrap;gap:4px;}
+  .step{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);}
+  .step .circle{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:#fff;}
+  .step.done .circle{background:#16a34a;border-color:#16a34a;color:#fff;}
+  .step.current .circle{border-color:#16a34a;color:#16a34a;}
+  .step-line{width:26px;height:2px;background:var(--border);margin:0 2px;}
+
+  .doc-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+  .doc-row:last-child{border-bottom:none;}
+  .doc-name{font-weight:600;font-size:13.5px;}
+  .doc-file{color:var(--muted);font-size:12px;margin-top:2px;}
+  .doc-status{padding:4px 10px;border-radius:999px;font-size:11.5px;font-weight:700;}
+  .doc-status.ok{background:#eefbf1;color:#166534;}
+  .doc-status.missing{background:#fdecec;color:#b42318;}
+  .doc-status.optional{background:#f1f5f9;color:#64748b;}
+  .doc-actions input[type=file]{font-size:11.5px;}
+
+  .trip-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13.5px;flex-wrap:wrap;gap:8px;}
+  .trip-row:last-child{border-bottom:none;}
+  .trip-payout{font-weight:700;color:#16a34a;}
+
+  .rating-stars{color:#f5b301;font-size:20px;letter-spacing:2px;}
+
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;}
+  .form-row .form-group{margin:0;}
+  .form-group label{display:block;font-size:12.5px;font-weight:600;margin-bottom:5px;color:var(--text);}
+  .form-group input,.form-group textarea{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font:inherit;}
+  .save-row{margin-top:16px;display:flex;gap:10px;align-items:center;}
+  .save-msg{font-size:12.5px;color:#16a34a;}
+
+  #driverMap{height:220px;border-radius:14px;overflow:hidden;margin-top:14px;}
+
+  @media (max-width:680px){ .form-row{grid-template-columns:1fr;} .status-card{flex-direction:column;align-items:flex-start;} }
+</style>
+</head>
+<body>
+
+<!-- Supabase SDK + client must load BEFORE the auth guard below runs -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabaseClient.js"></script>
+<script>
+  // Auth guard: only signed-in drivers may view this page.
+  // Rewritten for Supabase Auth — the old localStorage('farmlinkUser')
+  // check never gets set anymore, so it always failed and bounced
+  // everyone back to login_register.html regardless of session state.
+  (async function(){
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) { window.location.replace('login_register.html'); return; }
+
+    const { data: profile } = await supabaseClient
+      .from('profiles')
+      .select('role')
+      .eq('id', session.user.id)
+      .single();
+
+    if (!profile || profile.role !== 'driver') {
+      window.location.replace('dashboard.html');
+    }
+  })();
+</script>
+
+<header class="navbar">
+  <a class="logo" href="#">
+    <svg width="180" viewBox="0 0 680 200" role="img" xmlns="http://www.w3.org/2000/svg">
+      <title>Rural Market Connector</title>
+      <g transform="translate(210, 60)">
+        <path d="M30 70 C10 50, 0 20, 30 5 C60 20, 50 50, 30 70Z" fill="#24B161"/>
+        <path d="M30 68 C30 45, 30 20, 30 6" fill="none" stroke="#1a8a45" stroke-width="1.2"/>
+        <path d="M30 45 C22 38, 14 36, 10 32" fill="none" stroke="#1a8a45" stroke-width="0.8"/>
+        <path d="M30 40 C38 33, 44 31, 48 28" fill="none" stroke="#1a8a45" stroke-width="0.8"/>
+        <path d="M30 70 C28 80, 25 85, 22 92" fill="none" stroke="#24B161" stroke-width="2" stroke-linecap="round"/>
+      </g>
+      <text x="270" y="108" font-family="sans-serif" font-size="28" font-weight="700" class="logo-text-main" letter-spacing="-0.5">RuralMarket</text>
+      <text x="272" y="128" font-family="sans-serif" font-size="13" class="logo-text-sub" letter-spacing="2.5">CONNECTOR</text>
+    </svg>
+  </a>
+  <div class="nav-right">
+    <button type="button" class="avail-toggle" id="availToggle"><span class="dot"></span><span id="availToggleLabel">Offline</span></button>
+    <div class="profile-chip" id="profileChip">
+      <div class="profile-avatar" id="profileAvatar">?</div>
+      <div class="profile-info">
+        <span class="profile-name" id="profileName">Guest</span>
+        <span class="profile-role" id="profileRole"></span>
+      </div>
+    </div>
+
+    <div class="menu-dropdown" id="mainMenu">
+      <button type="button" class="menu-trigger" id="menuTriggerBtn" aria-haspopup="true" aria-expanded="false">
+        <span class="menu-icon"><span></span><span></span><span></span></span>
+        <span class="menu-label">Menu</span>
+        <span class="menu-caret">▾</span>
+      </button>
+      <div class="menu-panel" role="menu">
+        <a href="#" class="nav-link active" data-page="overview">Overview</a>
+        <a href="#" class="nav-link" data-page="jobs">Available Jobs</a>
+        <a href="#" class="nav-link" data-page="deliveries">My Deliveries</a>
+        <a href="#" class="nav-link" data-page="earnings">Earnings</a>
+        <a href="#" class="nav-link" data-page="profile">Profile & Documents</a>
+        <div class="menu-divider"></div>
+        <button type="button" class="menu-logout-item js-logout" id="logoutBtn">Log Out</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<!-- OVERVIEW -->
+<div id="overview" class="page active">
+  <div class="container" style="padding-top:20px">
+    <div class="status-card" id="statusCard">
+      <div>
+        <h3 id="statusTitle">Verification pending</h3>
+        <p id="statusText">Your documents are being reviewed.</p>
+      </div>
+      <span class="doc-status" id="statusBadge">Pending</span>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-label">Total earnings</div><div class="stat-value" id="statEarnings">R 0.00</div><div class="stat-sub">All-time</div></div>
+      <div class="stat-card"><div class="stat-label">Trips completed</div><div class="stat-value" id="statTrips">0</div><div class="stat-sub" id="statTripsSub">No trips yet</div></div>
+      <div class="stat-card"><div class="stat-label">Rating</div><div class="stat-value" id="statRating">—</div><div class="stat-sub">Based on completed deliveries</div></div>
+      <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value" id="statAvailability">Offline</div><div class="stat-sub">Toggle at the top right</div></div>
+    </div>
+
+    <div class="section-card" id="overviewActiveCard" style="display:none">
+      <h2>🚚 Active delivery</h2>
+      <p class="card-sub">Your current job — update its status as you go.</p>
+      <div id="overviewActiveJob"></div>
+    </div>
+
+    <div class="section-card">
+      <h2>📦 Ready for your next job?</h2>
+      <p class="card-sub">Go online and check the available delivery jobs in your service area.</p>
+      <button class="btn-primary" onclick="showSection('jobs')">View available jobs →</button>
+    </div>
+  </div>
+</div>
+
+<!-- AVAILABLE JOBS -->
+<div id="jobs" class="page">
+  <div class="container" style="padding-top:20px">
+    <div class="section-header"><h2>Available delivery jobs</h2></div>
+    <p class="card-sub" id="jobsHint" style="margin-bottom:16px"></p>
+    <div id="jobsList"></div>
+    <p class="empty-state" id="jobsEmpty" style="display:none">No available jobs right now — check back soon.</p>
+  </div>
+</div>
+
+<!-- MY DELIVERIES -->
+<div id="deliveries" class="page">
+  <div class="container" style="padding-top:20px">
+    <div class="section-header"><h2>My deliveries</h2></div>
+
+    <div class="section-card">
+      <h2>🚚 Active delivery</h2>
+      <div id="activeDeliveryDetail"><p class="card-sub">You don't have an active delivery. Accept a job from Available Jobs to get started.</p></div>
+    </div>
+
+    <div class="section-card">
+      <h2>📜 Delivery history</h2>
+      <div id="deliveryHistory"></div>
+      <p class="empty-state" id="historyEmpty" style="display:none">Completed deliveries will show up here.</p>
+    </div>
+  </div>
+</div>
+
+<!-- EARNINGS -->
+<div id="earnings" class="page">
+  <div class="container" style="padding-top:20px">
+    <div class="section-header"><h2>Earnings</h2></div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-label">Total earnings</div><div class="stat-value" id="earnTotal">R 0.00</div></div>
+      <div class="stat-card"><div class="stat-label">This week</div><div class="stat-value" id="earnWeek">R 0.00</div></div>
+      <div class="stat-card"><div class="stat-label">This month</div><div class="stat-value" id="earnMonth">R 0.00</div></div>
+    </div>
+    <div class="section-card">
+      <h2>💳 Payout account</h2>
+      <p class="card-sub">Earnings are paid out to the bank details you gave at registration.</p>
+      <p id="earnBankDetails" style="font-weight:600"></p>
+      <button class="btn-outline" onclick="showSection('profile')">Update bank details</button>
+    </div>
+    <div class="section-card">
+      <h2>🧾 Trip history & payouts</h2>
+      <div id="earningsList"></div>
+      <p class="empty-state" id="earningsEmpty" style="display:none">No payouts yet — complete a delivery to start earning.</p>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE & DOCUMENTS -->
+<div id="profile" class="page">
+  <div class="container" style="padding-top:20px">
+    <div class="section-header"><h2>Profile & documents</h2></div>
+
+    <div class="section-card">
+      <h2>⭐ Driver profile</h2>
+      <p class="rating-stars" id="profileStars">★★★★★</p>
+      <p class="card-sub" id="profileRatingText"></p>
+      <p class="card-sub" id="profileMemberSince"></p>
+    </div>
+
+    <div class="section-card">
+      <h2>🚗 Vehicle details</h2>
+      <form id="vehicleForm">
+        <div class="form-row">
+          <div class="form-group"><label for="pfVehicleMake">Vehicle make & model</label><input id="pfVehicleMake"></div>
+          <div class="form-group"><label for="pfVehicleYear">Vehicle year</label><input id="pfVehicleYear" type="number" min="1990" max="2035"></div>
+          <div class="form-group"><label for="pfVehiclePlate">Vehicle registration</label><input id="pfVehiclePlate"></div>
+          <div class="form-group"><label for="pfDriverArea">Service area</label><input id="pfDriverArea"></div>
+        </div>
+        <div class="save-row"><button type="submit" class="btn-primary">Save vehicle details</button><span class="save-msg" id="vehicleSaveMsg"></span></div>
+      </form>
+    </div>
+
+    <div class="section-card">
+      <h2>📄 Documents</h2>
+      <p class="card-sub">These were submitted during registration. Replace any that are missing, expired or were rejected.</p>
+      <div id="docList"></div>
+    </div>
+
+    <div class="section-card">
+      <h2>💳 Employment & payment details</h2>
+      <form id="paymentForm">
+        <div class="form-row">
+          <div class="form-group" style="grid-column:1/-1"><label for="pfExperience">Previous driving/delivery experience</label><textarea id="pfExperience" rows="2"></textarea></div>
+          <div class="form-group"><label for="pfBankDetails">Bank account details for payment</label><input id="pfBankDetails"></div>
+          <div class="form-group"><label for="pfTaxNumber">Tax number (if contracting)</label><input id="pfTaxNumber"></div>
+        </div>
+        <div class="save-row"><button type="submit" class="btn-primary">Save payment details</button><span class="save-msg" id="paymentSaveMsg"></span></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="local-store.js"></script>
+<script src="farmlink-api.js"></script>
+<script src="theme.js"></script>
+<script src="sound-fx.js"></script>
+<script src="driver-dashboard.js"></script>
+<script src="nav-auth.js"></script>
+<script src="account-panel.js"></script>
+</body>
+</html>

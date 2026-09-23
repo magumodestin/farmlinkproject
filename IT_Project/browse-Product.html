@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FarmLink - Farmers. Buyers. Connected.</title>
+<link rel="stylesheet" href="home.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+
+<header class="navbar">
+    <a class="logo" href="#">
+    <svg width="180" viewBox="0 0 680 200" role="img" xmlns="http://www.w3.org/2000/svg">
+      <title>Rural Market Connector</title>
+      <g transform="translate(210, 60)">
+        <path d="M30 70 C10 50, 0 20, 30 5 C60 20, 50 50, 30 70Z" fill="#24B161"/>
+        <path d="M30 68 C30 45, 30 20, 30 6" fill="none" stroke="#1a8a45" stroke-width="1.2"/>
+        <path d="M30 45 C22 38, 14 36, 10 32" fill="none" stroke="#1a8a45" stroke-width="0.8"/>
+        <path d="M30 40 C38 33, 44 31, 48 28" fill="none" stroke="#1a8a45" stroke-width="0.8"/>
+        <path d="M30 70 C28 80, 25 85, 22 92" fill="none" stroke="#24B161" stroke-width="2" stroke-linecap="round"/>
+      </g>
+      <text x="270" y="108" font-family="sans-serif" font-size="28" font-weight="700" class="logo-text-main" letter-spacing="-0.5">RuralMarket</text>
+      <text x="272" y="128" font-family="sans-serif" font-size="13" class="logo-text-sub" letter-spacing="2.5">CONNECTOR</text>
+    </svg>
+  </a>
+  <div class="nav-right">
+    <nav class="nav-links">
+      <a href="dashboard.html" class="nav-link" data-page="home">Home</a>
+      <a href="browse-Product.html" class="nav-link active" data-page="browse">Browse Products</a>
+      <a href="#" class="nav-link" data-page="farmers">For Farmers</a>
+      <a href="#" class="nav-link" data-page="buyers">For Buyers</a>
+      <a href="#" class="nav-link" data-page="how">How It Works</a>
+      <a href="#" class="nav-link" data-page="about">About Us</a>
+      <a href="#" class="nav-link" data-page="contact">Contact Us</a>
+    </nav>
+
+    <div class="search-wrap">
+      <div class="search-icon" onclick="toggleSearch()"><span class="search-svg"></span></div>
+      <input type="text" class="search-input" id="searchInput" placeholder="Search products...">
+    </div>
+    <a href="login_register.html" class="btn-outline guest-only">Log In</a>
+    <a href="login_register.html" class="btn-green guest-only">Sign Up</a>
+    <div class="profile-chip auth-only" id="profileChip">
+      <div class="profile-avatar" id="profileAvatar">?</div>
+      <div class="profile-info">
+        <span class="profile-name" id="profileName">Account</span>
+        <span class="profile-role" id="profileRole"></span>
+      </div>
+    </div>
+
+    <div class="menu-dropdown" id="mainMenu">
+      <button type="button" class="menu-trigger" id="menuTriggerBtn" aria-haspopup="true" aria-expanded="false">
+        <span class="menu-icon"><span></span><span></span><span></span></span>
+        <span class="menu-label">Menu</span>
+        <span class="menu-caret">▾</span>
+      </button>
+      <div class="menu-panel" role="menu">
+        <a href="#" class="nav-link active" data-page="home">Home</a>
+        <a href="#" class="nav-link" data-page="browse">Browse Products</a>
+        <a href="#" class="nav-link" data-page="farmers">For Farmers</a>
+        <a href="#" class="nav-link" data-page="buyers">For Buyers</a>
+        <a href="#" class="nav-link" data-page="how">How It Works</a>
+        <a href="#" class="nav-link" data-page="about">About Us</a>
+        <a href="#" class="nav-link" data-page="contact">Contact Us</a>
+        <div class="menu-divider auth-only"></div>
+        <button type="button" class="menu-logout-item auth-only js-logout">Log Out</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- OTHER PAGES -->
+<div id="browse" class="page active">
+  <div class="container">
+    <div class="browse-crumb"><a href="categories.html" id="backToCategories">← All categories</a></div>
+    <div class="section-header">
+      <h2 id="browseTitle">Browse Products</h2>
+    </div>
+    <div class="filters" id="browseFilters">
+      <button class="filter-btn active" data-cat="All">All</button>
+      <button class="filter-btn" data-cat="Vegetables">Vegetables</button>
+      <button class="filter-btn" data-cat="Fruits">Fruits</button>
+      <button class="filter-btn" data-cat="Grains & Cereals">Grains & Cereals</button>
+      <button class="filter-btn" data-cat="Eggs & Poultry">Eggs & Poultry</button>
+      <button class="filter-btn" data-cat="Meat & Poultry">Meat & Poultry</button>
+      <button class="filter-btn" data-cat="Dairy">Dairy</button>
+      <button class="filter-btn" data-cat="Herbs & Spices">Herbs & Spices</button>
+      <button class="filter-btn" data-cat="Honey & Bee Products">Honey & Bee Products</button>
+      <button class="filter-btn" data-cat="Nuts & Seeds">Nuts & Seeds</button>
+      <button class="filter-btn" data-cat="Plants & Seedlings">Plants & Seedlings</button>
+      <button class="filter-btn" data-cat="Farm Inputs">Farm Inputs</button>
+      <button class="filter-btn" data-cat="Animal Feed">Animal Feed</button>
+      <button class="filter-btn" data-cat="Farm Goods">Farm Goods</button>
+      <button class="filter-btn" data-cat="Flowers & Plants">Flowers & Plants</button>
+      <button class="filter-btn" data-cat="Farm Services">Farm Services</button>
+      <button class="filter-btn" data-cat="Farm Experiences">Farm Experiences</button>
+    </div>
+    <div class="product-grid" id="browseGrid"></div>
+    <p id="browseEmpty" class="browse-empty" style="display:none;">No products in this category yet — check back soon!</p>
+  </div>
+</div>
+<div id="farmers" class="page"><div style="padding: 60px 5%; text-align:center"><h1>🚜 For Farmers</h1></div></div>
+<div id="buyers" class="page"><div style="padding: 60px 5%; text-align:center"><h1>🛍️ For Buyers</h1></div></div>
+<div id="how" class="page">
+  <div class="container">
+    <div style="text-align:center; margin-bottom:36px;">
+      <h1>How It Works</h1>
+    </div>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="how-icon">🌾</div>
+        <div class="how-text">
+          <h3>1. Farmers list</h3>
+          <p>Farmers upload their products</p>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="how-icon">🔍</div>
+        <div class="how-text">
+          <h3>2. Buyers browse</h3>
+          <p>Buyers find fresh produce near them</p>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="how-icon">💳</div>
+        <div class="how-text">
+          <h3>3. Order & pay</h3>
+          <p>Pay securely through the platform</p>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="how-icon">🚚</div>
+        <div class="how-text">
+          <h3>4. Deliver & enjoy</h3>
+          <p>Pick up or get delivery straight from the farmer</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="about" class="page"><div style="padding: 60px 5%; text-align:center"><h1>🌿 About FarmLink</h1></div></div>
+<div id="contact" class="page">
+  <div class="container" style="text-align:center;">
+    <h1>📬 Contact FarmLink</h1>
+    <p class="muted">Questions about orders, sellers, drivers or verification? We are here to help.</p>
+    <p style="color:var(--muted); margin:12px 0 30px;">Reach out and we'll get back to you as soon as we can.</p>
+    <div class="contact-grid">
+      <a href="mailto:farmlink@company.com" class="contact-card">
+        <div class="contact-icon">✉️</div>
+        <h3>Email Us</h3>
+        <p>farmlink@company.com</p>
+      </a>
+      <a href="tel:+27115550148" class="contact-card">
+        <div class="contact-icon">📞</div>
+        <h3>Call Us</h3>
+        <p>011 555 0148</p>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script src="local-store.js"></script>
+<script src="farmlink-api.js"></script>
+<script src="theme.js"></script>
+<script src="sound-fx.js"></script>
+<script src="home.js"></script>
+<script src="nav-auth.js"></script>
+<script src="account-panel.js"></script>
+</body>
+</html>

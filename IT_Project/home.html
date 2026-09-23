@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FarmLink - Farmers. Buyers. Connected.</title>
+<link rel="stylesheet" href="home.css">
+<style>
+
+  html{scroll-behavior:smooth}
+
+  .cover-hero{
+    position:relative; min-height:86vh; display:flex; align-items:center;
+    background:linear-gradient(180deg, rgba(10,30,15,.55), rgba(10,30,15,.72)), url('imgs/project.png');
+    background-size:cover; background-position:center;
+  }
+  .cover-hero-inner{position:relative; z-index:1; padding:0 5%; max-width:720px; color:#fff}
+  .cover-hero-inner h1{font-size:46px; line-height:1.15; margin-bottom:14px; text-shadow:0 2px 10px rgba(0,0,0,.35)}
+  .cover-hero-inner p{font-size:16.5px; color:#eef7ef; margin-bottom:26px; max-width:560px}
+  .cover-btns{display:flex; gap:14px; flex-wrap:wrap; align-items:center}
+  .cover-btns .btn-green{padding:13px 26px; font-size:15px; border-radius:9px}
+  .btn-white-outline{padding:12px 25px; border:1.5px solid #fff; color:#fff; border-radius:9px; font-size:15px; font-weight:600}
+  .btn-white-outline:hover{background:rgba(255,255,255,.12)}
+  .cover-guest-link{display:inline-block; margin-top:22px; font-size:13.5px; color:#dcefe0}
+  .cover-guest-link:hover{text-decoration:underline}
+
+  .menu-admin-link{
+    display:block; text-align:center; margin-top:4px; padding:9px 10px;
+    font-size:12px; color:var(--muted); border-top:1px solid var(--border);
+  }
+  .menu-admin-link:hover{ color:var(--green); }
+
+  .trust-strip{display:flex; gap:24px; flex-wrap:wrap; justify-content:center; padding:26px 5%; background:var(--card)}
+
+  .section-title{text-align:center; margin-bottom:8px}
+  .section-sub{text-align:center; color:var(--muted); max-width:560px; margin:0 auto 30px}
+
+  .cta-band{background:#eefbf1; padding:50px 5%; text-align:center}
+  body.dark .cta-band{background:#122417}
+  .cta-band h2{margin-bottom:10px}
+  .cta-band p{color:var(--muted); margin-bottom:22px}
+
+  .site-footer{padding:26px 5% 34px; text-align:center; color:var(--muted); font-size:13px; border-top:1px solid var(--border)}
+  .site-footer a{color:var(--green); font-weight:600}
+
+  @media(max-width:640px){
+    .cover-hero{min-height:78vh}
+    .cover-hero-inner h1{font-size:32px}
+  }
+</style>
+</head>
+<body>
+
+<!-- Supabase SDK + client must load BEFORE this check runs -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabaseClient.js"></script>
+<script>
+  // If already logged in (Supabase session, not the old farmlinkUser
+  // localStorage flag), skip the marketing page and go straight in.
+  (async function(){
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) { window.location.replace('dashboard.html'); }
+  })();
+</script>
+
+<header class="navbar">
+  <a class="logo" href="#hero">
+    <svg width="180" viewBox="0 0 680 200" role="img" xmlns="http://www.w3.org/2000/svg">
+      <title>Rural Market Connector</title>
+      <g transform="translate(210, 60)">
+        <path d="M30 70 C10 50, 0 20, 30 5 C60 20, 50 50, 30 70Z" fill="#24B161"/>
+        <path d="M30 68 C30 45, 30 20, 30 6" fill="none" stroke="#1a8a45" stroke-width="1.2"/>
+        <path d="M30 45 C22 38, 14 36, 10 32" fill="none" stroke="#1a8a45" stroke-width="0.8"/>
+        <path d="M30 40 C38 33, 44 31, 48 28" fill="none" stroke="#1a8a45" stroke-width="0.8"/>
+        <path d="M30 70 C28 80, 25 85, 22 92" fill="none" stroke="#24B161" stroke-width="2" stroke-linecap="round"/>
+      </g>
+      <text x="270" y="108" font-family="sans-serif" font-size="28" font-weight="700" class="logo-text-main" letter-spacing="-0.5">RuralMarket</text>
+      <text x="272" y="128" font-family="sans-serif" font-size="13" class="logo-text-sub" letter-spacing="2.5">CONNECTOR</text>
+    </svg>
+  </a>
+  <div class="menu-dropdown" id="mainMenu">
+    <button type="button" class="menu-trigger" id="menuTriggerBtn" aria-haspopup="true" aria-expanded="false">
+      <span class="menu-icon"><span></span><span></span><span></span></span>
+      <span class="menu-label">Menu</span>
+      <span class="menu-caret">▾</span>
+    </button>
+    <div class="menu-panel" role="menu">
+      <a href="#hero" class="nav-link active">Home</a>
+      <a href="browse-Product.html" class="nav-link">Browse Products</a>
+      <a href="#farmers" class="nav-link">For Farmers</a>
+      <a href="#buyers" class="nav-link">For Buyers</a>
+      <a href="#how" class="nav-link">How It Works</a>
+      <a href="#about" class="nav-link">About Us</a>
+      <a href="#contact" class="nav-link">Contact Us</a>
+      <div class="menu-divider"></div>
+      <div class="menu-auth-row">
+        <a href="login_register.html" class="btn-outline">Log In</a>
+        <a href="login_register.html" class="btn-green">Sign Up</a>
+      </div>
+      <a href="admin/index.html" class="menu-admin-link">🔒 Admin Login</a>
+    </div>
+  </div>
+</header>
+
+<section id="hero" class="cover-hero">
+  <div class="cover-hero-inner">
+    <h1>Fresh from the farm,<br>direct to you</h1>
+    <p>FarmLink connects farmers directly with buyers — no middlemen, fair prices for growers, fresher produce for everyone. Create an account to start browsing, selling or arranging delivery.</p>
+    <div class="cover-btns">
+      <a href="login_register.html" class="btn-green">Sign Up Free</a>
+      <a href="login_register.html" class="btn-white-outline">Log In</a>
+    </div>
+    <a href="browse-Product.html" class="cover-guest-link">Just want to look around? Browse products as a guest →</a>
+  </div>
+</section>
+
+<div class="trust-strip reveal">
+  <div class="badge">🌾 Verified farmers &amp; sellers</div>
+  <div class="badge">🚚 Local delivery drivers</div>
+  <div class="badge">🔒 Secure checkout</div>
+  <div class="badge">💬 Direct farmer messaging</div>
+</div>
+
+<section id="how" class="container reveal">
+  <h1 class="section-title">How It Works</h1>
+  <div class="how-steps">
+    <div class="how-step">
+      <div class="how-icon">🌾</div>
+      <div class="how-text">
+        <h3>1. Farmers list</h3>
+        <p>Farmers upload their products</p>
+      </div>
+    </div>
+    <div class="how-step">
+      <div class="how-icon">🔍</div>
+      <div class="how-text">
+        <h3>2. Buyers browse</h3>
+        <p>Buyers find fresh produce near them</p>
+      </div>
+    </div>
+    <div class="how-step">
+      <div class="how-icon">💳</div>
+      <div class="how-text">
+        <h3>3. Order & pay</h3>
+        <p>Pay securely through the platform</p>
+      </div>
+    </div>
+    <div class="how-step">
+      <div class="how-icon">🚚</div>
+      <div class="how-text">
+        <h3>4. Deliver & enjoy</h3>
+        <p>Pick up or get delivery straight from the farmer</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="farmers" class="container reveal" style="padding-top:10px">
+  <div style="text-align:center">
+    <h1>🚜 For Farmers</h1>
+    <p class="muted">Sell produce, livestock products, farm inputs and services through FarmLink.</p>
+  </div>
+  <div class="how-steps" style="margin-top:35px">
+    <div class="how-step"><div class="how-icon">🌱</div><div class="how-text"><h3>Sell harvests</h3><p>Vegetables, fruit, grains, herbs, flowers and more.</p></div></div>
+    <div class="how-step"><div class="how-icon">🐄</div><div class="how-text"><h3>Sell farm products</h3><p>Eggs, dairy, meat, honey, nuts, seeds and animal feed.</p></div></div>
+    <div class="how-step"><div class="how-icon">🚜</div><div class="how-text"><h3>Offer services</h3><p>Equipment hire, ploughing, storage, delivery and other local services.</p></div></div>
+  </div>
+  <div style="text-align:center; margin-top:26px">
+    <a href="login_register.html" class="btn-primary">Register as a Seller →</a>
+  </div>
+</section>
+
+<section id="buyers" class="container reveal" style="padding-top:10px">
+  <div style="text-align:center">
+    <h1>🛍️ For Buyers</h1>
+    <p class="muted">Shop farm-direct products, hire verified local drivers, or book farm experiences.</p>
+  </div>
+  <div class="how-steps" style="margin-top:35px">
+    <div class="how-step"><div class="how-icon">🛒</div><div class="how-text"><h3>Farm-direct shopping</h3><p>Fresh produce and farm goods with transparent pricing.</p></div></div>
+    <div class="how-step"><div class="how-icon">🚗</div><div class="how-text"><h3>Hire local drivers</h3><p>Choose verified drivers and track your order.</p></div></div>
+    <div class="how-step"><div class="how-icon">🌾</div><div class="how-text"><h3>Experiences</h3><p>Discover farm tours, stays and educational visits.</p></div></div>
+  </div>
+</section>
+
+<section id="about" class="container reveal" style="text-align:center; padding-top:10px">
+  <h1>About FarmLink</h1>
+  <p class="muted" style="max-width:640px; margin:14px auto 0">We connect farmers directly with buyers — cutting out middlemen so farmers earn fairer prices and buyers get fresher produce for less.</p>
+</section>
+
+<section id="contact" class="container reveal" style="text-align:center; padding-top:10px">
+  <h1>📬 Contact FarmLink</h1>
+  <p class="muted">Questions about orders, sellers, drivers or verification? We are here to help.</p>
+  <p style="color:var(--muted); margin:12px 0 30px;">Reach out and we'll get back to you as soon as we can.</p>
+  <div class="contact-grid">
+    <a href="mailto:farmlink@company.com" class="contact-card">
+      <div class="contact-icon">✉️</div>
+      <h3>Email Us</h3>
+      <p>farmlink@company.com</p>
+    </a>
+    <a href="tel:+27115550148" class="contact-card">
+      <div class="contact-icon">📞</div>
+      <h3>Call Us</h3>
+      <p>071 884 6311</p>
+    </a>
+  </div>
+</section>
+
+<div class="cta-band reveal">
+  <h2>Ready to get started?</h2>
+  <p>Join FarmLink as a buyer or a seller — it only takes a minute.</p>
+  <div class="cover-btns" style="justify-content:center">
+    <a href="login_register.html" class="btn-green">Sign Up Free</a>
+    <a href="login_register.html" class="btn-outline">Log In</a>
+  </div>
+</div>
+
+<footer class="site-footer">
+  © 2026 FarmLink. Farmers. Buyers. Connected. · <a href="mailto:farmlink@company.com">farmlink@company.com</a>
+</footer>
+
+<script src="farmlink-api.js"></script>
+<script src="theme.js"></script>
+<script src="sound-fx.js"></script>
+<script src="reveal.js"></script>
+<script src="nav-auth.js"></script>
+</body>
+</html>

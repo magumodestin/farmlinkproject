@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FarmLink - My Dashboard</title>
+<link rel="stylesheet" href="home.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  .welcome-banner{background:#eefbf1;border:1px solid #d9efdd;color:#1f5030;border-radius:14px;padding:14px 20px;margin:18px 5% 0;font-size:14.5px;}
+  .welcome-banner strong{color:#178a44;}
+</style>
+</head>
+<body class="dashboard-page">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabaseClient.js"></script>
+<script>
+  (async function(){
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) { window.location.replace('login_register.html'); }
+  })();
+</script>
+
+<header class="navbar">
+    <a class="logo" href="#">
+    <svg width="180" viewBox="0 0 680 200" role="img" xmlns="http://www.w3.org/2000/svg">
+      <title>Rural Market Connector</title>
+      <g transform="translate(210, 60)">
+        <path d="M30 70 C10 50, 0 20, 30 5 C60 20, 50 50, 30 70Z" fill="#24B161"/>
+        <path d="M30 68 C30 45, 30 20, 30 6" fill="none" stroke="#1a8a45" stroke-width="1.2"/>
+        <path d="M30 45 C22 38, 14 36, 10 32" fill="none" stroke="#1a8a45" stroke-width="0.8"/>
+        <path d="M30 40 C38 33, 44 31, 48 28" fill="none" stroke="#1a8a45" stroke-width="0.8"/>
+        <path d="M30 70 C28 80, 25 85, 22 92" fill="none" stroke="#24B161" stroke-width="2" stroke-linecap="round"/>
+      </g>
+      <text x="270" y="108" font-family="sans-serif" font-size="28" font-weight="700" class="logo-text-main" letter-spacing="-0.5">RuralMarket</text>
+      <text x="272" y="128" font-family="sans-serif" font-size="13" class="logo-text-sub" letter-spacing="2.5">CONNECTOR</text>
+    </svg>
+  </a>
+  <div class="nav-right">
+    <nav class="nav-links">
+      <a href="#" class="nav-link active" data-page="home">Home</a>
+      <a href="browse-Product.html" class="nav-link" data-page="browse">Browse Products</a>
+      <a href="#" class="nav-link" data-page="farmers">For Farmers</a>
+      <a href="#" class="nav-link" data-page="buyers">For Buyers</a>
+      <a href="#" class="nav-link" data-page="how">How It Works</a>
+      <a href="#" class="nav-link" data-page="about">About Us</a>
+      <a href="#" class="nav-link" data-page="contact">Contact Us</a>
+    </nav>
+
+    <div class="search-wrap">
+      <div class="search-icon" onclick="toggleSearch()"><span class="search-svg"></span></div>
+      <input type="text" class="search-input" id="searchInput" placeholder="Search products...">
+    </div>
+
+    <div class="profile-chip" id="profileChip">
+      <div class="profile-avatar" id="profileAvatar">?</div>
+      <div class="profile-info">
+        <span class="profile-name" id="profileName">Guest</span>
+        <span class="profile-role" id="profileRole"></span>
+      </div>
+    </div>
+
+    <div class="menu-dropdown" id="mainMenu">
+      <button type="button" class="menu-trigger" id="menuTriggerBtn" aria-haspopup="true" aria-expanded="false">
+        <span class="menu-icon"><span></span><span></span><span></span></span>
+        <span class="menu-label">Menu</span>
+        <span class="menu-caret">▾</span>
+      </button>
+      <div class="menu-panel" role="menu">
+        <a href="#" class="nav-link active" data-page="home">Home</a>
+        <a href="browse-Product.html" class="nav-link" data-page="browse">Browse Products</a>
+        <a href="#" class="nav-link" data-page="farmers">For Farmers</a>
+        <a href="#" class="nav-link" data-page="buyers">For Buyers</a>
+        <a href="#" class="nav-link" data-page="how">How It Works</a>
+        <a href="#" class="nav-link" data-page="about">About Us</a>
+        <a href="#" class="nav-link" data-page="contact">Contact Us</a>
+        <div class="menu-divider"></div>
+        <button type="button" class="menu-logout-item js-logout" id="logoutBtn">Log Out</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<div id="home" class="page active">
+
+
+  <div class="container">
+    <div class="section-header">
+      <h2>Shop by Category</h2>
+      <a href="categories.html" class="view-all">View all categories</a>
+    </div>
+    <div class="category-grid">
+      <div class="category-card" data-category="Vegetables" role="button" tabindex="0"><img src="imgs/vegetable.jpg" alt="Vegetables"><span class="category-icon">🥕</span><p>Vegetables</p></div>
+      <div class="category-card" data-category="Fruits" role="button" tabindex="0"><img src="imgs/fruits.jpg" alt="Fruits"><span class="category-icon">🍎</span><p>Fruits</p></div>
+      <div class="category-card" data-category="Grains & Cereals" role="button" tabindex="0"><img src="imgs/maize.jpg" alt="Grains & Cereals"><span class="category-icon">🌾</span><p>Grains & Cereals</p></div>
+      <div class="category-card" data-category="Eggs & Poultry" role="button" tabindex="0"><img src="imgs/eggs.jpg" alt="Eggs & Poultry"><span class="category-icon">🥚</span><p>Eggs & Poultry</p></div>
+      <div class="category-card" data-category="Meat & Poultry" role="button" tabindex="0"><img src="imgs/livestock.jpg" alt="Meat & Poultry"><span class="category-icon">🍗</span><p>Meat & Poultry</p></div>
+      <div class="category-card" data-category="Dairy" role="button" tabindex="0"><img src="imgs/dairy.jpg" alt="Dairy"><span class="category-icon">🧀</span><p>Dairy</p></div>
+      <div class="category-card" data-category="Herbs & Spices" role="button" tabindex="0"><img src="imgs/herbs.jpg" alt="Herbs & Spices"><span class="category-icon">🌿</span><p>Herbs & Spices</p></div>
+      <div class="category-card" data-category="Honey & Bee Products" role="button" tabindex="0"><img src="imgs/honey.jpg" alt="Honey & Bee Products"><span class="category-icon">🍯</span><p>Honey & Bee Products</p></div>
+      <div class="category-card" data-category="Nuts & Seeds" role="button" tabindex="0"><img src="imgs/nuts&seeds.jpg" alt="Nuts & Seeds"><span class="category-icon">🥜</span><p>Nuts & Seeds</p></div>
+      <div class="category-card" data-category="Plants & Seedlings" role="button" tabindex="0"><img src="imgs/herbs.jpg" alt="Plants & Seedlings"><span class="category-icon">🌱</span><p>Plants & Seedlings</p></div>
+      <div class="category-card" data-category="Farm Inputs" role="button" tabindex="0"><img src="imgs/FarmInputs&Fertilizers.jpg" alt="Farm Inputs"><span class="category-icon">🧪</span><p>Farm Inputs</p></div>
+      <div class="category-card" data-category="Animal Feed" role="button" tabindex="0"><img src="imgs/livestock.jpg" alt="Animal Feed"><span class="category-icon">🐖</span><p>Animal Feed</p></div>
+      <div class="category-card" data-category="Farm Goods" role="button" tabindex="0"><img src="imgs/project.png" alt="Farm Goods"><span class="category-icon">🧺</span><p>Farm Goods</p></div>
+      <div class="category-card" data-category="Flowers & Plants" role="button" tabindex="0"><img src="imgs/fruits.jpg" alt="Flowers & Plants"><span class="category-icon">💐</span><p>Flowers & Plants</p></div>
+      <div class="category-card" data-category="Farm Services" role="button" tabindex="0"><img src="imgs/FarmInputs&Fertilizers.jpg" alt="Farm Services"><span class="category-icon">🚜</span><p>Farm Services</p></div>
+      <div class="category-card" data-category="Farm Experiences" role="button" tabindex="0"><img src="imgs/project.png" alt="Farm Experiences"><span class="category-icon">🏡</span><p>Farm Experiences</p></div>
+      <div class="category-card" data-category="Livestock" role="button" tabindex="0"><img src="imgs/livestock.jpg" alt="Live Livestock"><span class="category-icon">🐄</span><p>Live Livestock</p></div>
+    </div>
+
+    <div class="section-header" style="margin-top:40px">
+      <h2>Fresh Picks Near You</h2>
+      <a href="#" class="view-all">View all</a>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px">
+      <div class="filter-dropdown" id="productFilterDropdown">
+        <button type="button" class="filter-trigger" id="filterTriggerBtn" aria-haspopup="true" aria-expanded="false">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+          <span class="menu-label">Filter</span>
+          <span class="filter-active-count" id="filterActiveCount">0</span>
+          <span class="menu-caret">▾</span>
+        </button>
+        <div class="filter-panel" role="dialog" aria-label="Filter products">
+          <div class="filter-panel-scroll">
+
+            <div class="filter-group">
+              <div class="filter-group-title">Sort by</div>
+              <div class="filter-pills" id="filterSortPills">
+                <button type="button" class="filter-pill active" data-sort="all">All</button>
+                <button type="button" class="filter-pill" data-sort="cheapest">Cheapest</button>
+                <button type="button" class="filter-pill" data-sort="closest">Closest</button>
+                <button type="button" class="filter-pill" data-sort="freshest">Freshest</button>
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <div class="filter-group-title">Category</div>
+              <select class="filter-select" id="filterCategory">
+                <option value="">All categories</option>
+                <option>Vegetables</option><option>Fruits</option><option>Grains & Cereals</option>
+                <option>Eggs & Poultry</option><option>Meat & Poultry</option><option>Dairy</option>
+                <option>Herbs & Spices</option><option>Honey & Bee Products</option><option>Nuts & Seeds</option>
+                <option>Plants & Seedlings</option><option>Farm Inputs</option><option>Animal Feed</option>
+                <option>Farm Goods</option><option>Flowers & Plants</option><option>Farm Services</option>
+                <option>Farm Experiences</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <div class="filter-group-title">Price range (R)</div>
+              <div class="filter-range-row">
+                <input type="number" class="filter-input" id="filterPriceMin" min="0" placeholder="Min">
+                <span>–</span>
+                <input type="number" class="filter-input" id="filterPriceMax" min="0" placeholder="Max">
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <div class="filter-group-title">Availability</div>
+              <label class="filter-checkbox"><input type="checkbox" id="filterInStock"> In stock only</label>
+            </div>
+
+            <div class="filter-group">
+              <div class="filter-group-title">Discounts</div>
+              <label class="filter-checkbox"><input type="checkbox" id="filterDiscounts"> On sale only</label>
+            </div>
+
+            <div class="filter-group">
+              <div class="filter-group-title">Dietary needs</div>
+              <div class="filter-checkbox-grid" id="filterDietary">
+                <label class="filter-checkbox"><input type="checkbox" value="Vegan"> Vegan</label>
+                <label class="filter-checkbox"><input type="checkbox" value="Vegetarian"> Vegetarian</label>
+                <label class="filter-checkbox"><input type="checkbox" value="Gluten-Free"> Gluten-Free</label>
+                <label class="filter-checkbox"><input type="checkbox" value="Organic"> Organic</label>
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <div class="filter-group-title">Freshness / Type</div>
+              <select class="filter-select" id="filterFreshnessType">
+                <option value="">Any</option>
+                <option>Fresh</option>
+                <option>Shelf-stable</option>
+                <option>Live / Fresh-cut</option>
+                <option>Dried / Processed</option>
+                <option>Service</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <div class="filter-group-title">Weight / Quantity</div>
+              <select class="filter-select" id="filterWeightTier">
+                <option value="">Any</option>
+                <option>Small</option>
+                <option>Standard</option>
+                <option>Bulk</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <div class="filter-group-title">Delivery options</div>
+              <div class="filter-checkbox-grid" id="filterDelivery">
+                <label class="filter-checkbox"><input type="checkbox" value="Farm pickup"> Farm pickup</label>
+                <label class="filter-checkbox"><input type="checkbox" value="Local delivery"> Local delivery</label>
+                <label class="filter-checkbox"><input type="checkbox" value="Same-day delivery"> Same-day delivery</label>
+                <label class="filter-checkbox"><input type="checkbox" value="On-site / call-out"> On-site / call-out</label>
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <div class="filter-group-title">Location / Store</div>
+              <select class="filter-select" id="filterLocation">
+                <option value="">All locations</option>
+                <option>Centurion, Gauteng</option><option>Eastern Cape</option><option>Free State</option>
+                <option>Gauteng</option><option>KwaZulu-Natal</option><option>Limpopo</option>
+                <option>Local areas</option><option>Midrand, Gauteng</option><option>Mpumalanga</option>
+                <option>North West</option><option>Northern Cape</option><option>Pretoria, Gauteng</option>
+                <option>Sandveld, Western Cape</option><option>Soshanguve, Gauteng</option>
+                <option>Tshwane, Gauteng</option><option>Western Cape</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <div class="filter-group-title">Packaging type</div>
+              <select class="filter-select" id="filterPackaging">
+                <option value="">Any</option>
+                <option>Loose</option>
+                <option>Bagged</option>
+                <option>Boxed / Crated</option>
+                <option>Bottled / Jarred</option>
+                <option>Packaged</option>
+                <option>N/A (service)</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <div class="filter-group-title">Allergens — free from</div>
+              <div class="filter-checkbox-grid" id="filterAllergens">
+                <label class="filter-checkbox"><input type="checkbox" value="Dairy"> Dairy</label>
+                <label class="filter-checkbox"><input type="checkbox" value="Nuts"> Nuts</label>
+                <label class="filter-checkbox"><input type="checkbox" value="Gluten"> Gluten</label>
+                <label class="filter-checkbox"><input type="checkbox" value="Eggs"> Eggs</label>
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <div class="filter-group-title">Special offers</div>
+              <label class="filter-checkbox"><input type="checkbox" id="filterSpecialOffers"> Badges &amp; promos only</label>
+            </div>
+
+          </div>
+          <div class="filter-panel-actions">
+            <button type="button" class="btn-outline" id="filterClearBtn">Clear all</button>
+            <button type="button" class="btn-primary" id="filterApplyBtn">Apply filters</button>
+          </div>
+        </div>
+      </div>
+      <div class="location"><span class="pin-icon"></span>Showing products near Pretoria, Gauteng</div>
+    </div>
+
+    <div class="product-grid" id="homeProductGrid"></div>
+  </div>
+</div>
+
+<div id="browse" class="page">
+  <div class="container">
+    <div class="browse-crumb"><a href="categories.html" id="backToCategories">← All categories</a></div>
+    <div class="section-header">
+      <h2 id="browseTitle">Browse Products</h2>
+    </div>
+    <div class="filters" id="browseFilters">
+      <button class="filter-btn active" data-cat="All">All</button>
+      <button class="filter-btn" data-cat="Vegetables">Vegetables</button>
+      <button class="filter-btn" data-cat="Fruits">Fruits</button>
+      <button class="filter-btn" data-cat="Grains & Cereals">Grains & Cereals</button>
+      <button class="filter-btn" data-cat="Eggs & Poultry">Eggs & Poultry</button>
+      <button class="filter-btn" data-cat="Meat & Poultry">Meat & Poultry</button>
+      <button class="filter-btn" data-cat="Dairy">Dairy</button>
+       <button class="filter-btn" data-cat="livestock">Livestock</button>
+      <button class="filter-btn" data-cat="Herbs & Spices">Herbs & Spices</button>
+      <button class="filter-btn" data-cat="Honey & Bee Products">Honey & Bee Products</button>
+      <button class="filter-btn" data-cat="Nuts & Seeds">Nuts & Seeds</button>
+      <button class="filter-btn" data-cat="Plants & Seedlings">Plants & Seedlings</button>
+      <button class="filter-btn" data-cat="Farm Inputs">Farm Inputs</button>
+      <button class="filter-btn" data-cat="Animal Feed">Animal Feed</button>
+      <button class="filter-btn" data-cat="Farm Goods">Farm Goods</button>
+      <button class="filter-btn" data-cat="Flowers & Plants">Flowers & Plants</button>
+      <button class="filter-btn" data-cat="Farm Services">Farm Services</button>
+      <button class="filter-btn" data-cat="Farm Experiences">Farm Experiences</button>
+    </div>
+    <div class="product-grid" id="browseGrid"></div>
+    <p id="browseEmpty" class="browse-empty" style="display:none;">No products in this category yet — check back soon!</p>
+  </div>
+</div>
+<div id="livestock" class="page"><div class="container" style="padding-top:50px"><div style="text-align:center"><h1>🐄 Live Livestock Marketplace</h1><p class="muted">Buy and enquire about cattle, sheep, goats, pigs, poultry, horses and other farm animals from verified sellers.</p></div><div id="livestockFilters" class="filter-row" style="margin:24px 0"><button class="filter-btn active" onclick="renderLivestock('All')">All</button><button class="filter-btn" onclick="renderLivestock('Cattle')">Cattle</button><button class="filter-btn" onclick="renderLivestock('Sheep')">Sheep</button><button class="filter-btn" onclick="renderLivestock('Goat')">Goats</button><button class="filter-btn" onclick="renderLivestock('Pig')">Pigs</button><button class="filter-btn" onclick="renderLivestock('Poultry')">Poultry</button><button class="filter-btn" onclick="renderLivestock('Horse')">Horses</button><button class="filter-btn" onclick="renderLivestock('Donkey')">Donkeys</button><button class="filter-btn" onclick="renderLivestock('Rabbit')">Rabbits</button></div><div class="product-grid" id="livestockGrid"></div><p id="livestockEmpty" class="browse-empty" style="display:none">No livestock listings available.</p></div></div>
+<div id="farmers" class="page"><div class="container" style="padding-top:50px"><div style="text-align:center"><h1>🚜 For Farmers</h1><p class="muted">Sell produce, livestock products, farm inputs and services through FarmLink.</p></div><div class="how-steps" style="margin-top:35px"><div class="how-step"><div class="how-icon">🌱</div><div class="how-text"><h3>Sell harvests</h3><p>Vegetables, fruit, grains, herbs, flowers and more.</p></div></div><div class="how-step"><div class="how-icon">🐄</div><div class="how-text"><h3>Sell farm products</h3><p>Eggs, dairy, meat, honey, nuts, seeds and animal feed.</p></div></div><div class="how-step"><div class="how-icon">🚜</div><div class="how-text"><h3>Offer services</h3><p>Equipment hire, ploughing, storage, delivery and other local services.</p></div></div></div></div></div>
+<div id="buyers" class="page"><div class="container" style="padding-top:50px"><div style="text-align:center"><h1>🛍️ For Buyers</h1><p class="muted">Shop farm-direct products, hire verified local drivers, or book farm experiences.</p></div><div class="how-steps" style="margin-top:35px"><div class="how-step"><div class="how-icon">🛒</div><div class="how-text"><h3>Farm-direct shopping</h3><p>Fresh produce and farm goods with transparent pricing.</p></div></div><div class="how-step"><div class="how-icon">🚗</div><div class="how-text"><h3>Hire local drivers</h3><p>Choose verified drivers and track your order.</p></div></div><div class="how-step"><div class="how-icon">🌾</div><div class="how-text"><h3>Experiences</h3><p>Discover farm tours, stays and educational visits.</p></div></div></div></div></div>
+<div id="how" class="page">
+  <div class="container">
+    <div style="text-align:center; margin-bottom:36px;">
+      <h1>How It Works</h1>
+    </div>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="how-icon">🌾</div>
+        <div class="how-text">
+          <h3>1. Farmers list</h3>
+          <p>Farmers upload their products</p>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="how-icon">🔍</div>
+        <div class="how-text">
+          <h3>2. Buyers browse</h3>
+          <p>Buyers find fresh produce near them</p>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="how-icon">💳</div>
+        <div class="how-text">
+          <h3>3. Order & pay</h3>
+          <p>Pay securely through the platform</p>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="how-icon">🚚</div>
+        <div class="how-text">
+          <h3>4. Deliver & enjoy</h3>
+          <p>Pick up or get delivery straight from the farmer</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="about" class="page"><div style="padding: 60px 5%; text-align:center"><h1>About FarmLink</h1>
+We connect farmers directly with buyers — cutting out middlemen so farmers earn fairer prices and buyers get fresher produce for less.
+</div>
+</div>
+<div id="contact" class="page">
+  <div class="container" style="text-align:center;">
+    <h1>📬 Contact FarmLink</h1>
+    <p class="muted">Questions about orders, sellers, drivers or verification? We are here to help.</p>
+    <p style="color:var(--muted); margin:12px 0 30px;">Reach out and we'll get back to you as soon as we can.</p>
+<div class="contact-grid">
+
+  <!-- Email -->
+  <a href="mailto:magumodestiny@gmail.com" class="contact-card">
+    <div class="contact-icon icon-email">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="m4 6 8 7 8-7"/></svg>
+    </div>
+    <h3>Email Us</h3>
+    <p>magumodestiny@gmail.com</p>
+  </a>
+
+  <!-- Phone -->
+  <a href="tel:+27718846311" class="contact-card">
+    <div class="contact-icon icon-phone">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    </div>
+    <h3>Call Us</h3>
+    <p>071 884 6311</p>
+  </a>
+
+  <!-- WhatsApp -->
+  <a href="https://wa.me/27718846311" 
+     class="contact-card" 
+     target="_blank"
+     rel="noopener noreferrer">
+    <div class="contact-icon icon-whatsapp">
+      <svg viewBox="0 0 32 32" fill="currentColor"><path d="M16.004 3C9.377 3 4 8.377 4 15.004c0 2.386.629 4.62 1.803 6.573L4 29l7.61-1.995a11.94 11.94 0 0 0 4.394.832h.005C22.626 27.837 28 22.46 28 15.833 28 9.206 22.63 3 16.004 3Zm0 21.865h-.004a9.86 9.86 0 0 1-5.02-1.375l-.36-.214-3.593.942.96-3.502-.235-.359a9.86 9.86 0 0 1-1.512-5.278c0-5.462 4.444-9.906 9.907-9.906 2.646 0 5.132 1.031 7.003 2.903a9.84 9.84 0 0 1 2.9 7.006c0 5.462-4.444 9.906-9.906 9.906Zm5.44-7.42c-.298-.149-1.759-.868-2.031-.967-.273-.099-.472-.149-.67.15-.198.298-.767.966-.94 1.164-.174.199-.348.223-.646.075-.298-.15-1.256-.463-2.394-1.478-.885-.79-1.483-1.766-1.657-2.064-.173-.298-.018-.46.13-.608.135-.134.298-.348.447-.522.15-.174.199-.298.298-.497.1-.199.05-.373-.025-.522-.075-.15-.67-1.614-.918-2.212-.242-.582-.487-.503-.67-.512l-.57-.01c-.198 0-.522.075-.795.373-.273.298-1.04 1.016-1.04 2.479 0 1.462 1.065 2.876 1.213 3.075.15.198 2.096 3.2 5.08 4.488.71.306 1.263.489 1.694.626.712.227 1.36.195 1.872.118.571-.085 1.759-.719 2.007-1.414.248-.695.248-1.29.174-1.414-.075-.124-.273-.199-.571-.348Z"/></svg>
+    </div>
+    <h3>WhatsApp</h3>
+    <p>Send us a message</p>
+  </a>
+
+</div>
+  </div>
+</div>
+
+
+<div class="feature-dock">
+  <div class="dock-item" style="animation-delay:.15s">
+    <button class="dock-icon-btn" onclick="openModal('cartModal')" title="Cart" aria-label="Cart">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.5" fill="currentColor" stroke="none"/><circle cx="18" cy="20" r="1.5" fill="currentColor" stroke="none"/><path d="M3 3h2l2.4 12.2a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.6L21 7H6"/></svg>
+      <span class="dock-badge" id="dockCartCount">0</span>
+    </button>
+  </div>
+  <div class="dock-item" style="animation-delay:.3s">
+    <button class="dock-icon-btn" onclick="openModal('trackerModal')" title="Track Order" aria-label="Track Order">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+    </button>
+  </div>
+  <div class="dock-item" style="animation-delay:0s">
+    <button class="whatsapp-btn" title="Message on WhatsApp" aria-label="Message on WhatsApp" onclick="openWhatsApp('Hi FarmLink, I have a question about my order.')">
+      <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16.004 3C9.377 3 4 8.377 4 15.004c0 2.386.629 4.62 1.803 6.573L4 29l7.61-1.995a11.94 11.94 0 0 0 4.394.832h.005C22.626 27.837 28 22.46 28 15.833 28 9.206 22.63 3 16.004 3Zm0 21.865h-.004a9.86 9.86 0 0 1-5.02-1.375l-.36-.214-3.593.942.96-3.502-.235-.359a9.86 9.86 0 0 1-1.512-5.278c0-5.462 4.444-9.906 9.907-9.906 2.646 0 5.132 1.031 7.003 2.903a9.84 9.84 0 0 1 2.9 7.006c0 5.462-4.444 9.906-9.906 9.906Zm5.44-7.42c-.298-.149-1.759-.868-2.031-.967-.273-.099-.472-.149-.67.15-.198.298-.767.966-.94 1.164-.174.199-.348.223-.646.075-.298-.15-1.256-.463-2.394-1.478-.885-.79-1.483-1.766-1.657-2.064-.173-.298-.018-.46.13-.608.135-.134.298-.348.447-.522.15-.174.199-.298.298-.497.1-.199.05-.373-.025-.522-.075-.15-.67-1.614-.918-2.212-.242-.582-.487-.503-.67-.512l-.57-.01c-.198 0-.522.075-.795.373-.273.298-1.04 1.016-1.04 2.479 0 1.462 1.065 2.876 1.213 3.075.15.198 2.096 3.2 5.08 4.488.71.306 1.263.489 1.694.626.712.227 1.36.195 1.872.118.571-.085 1.759-.719 2.007-1.414.248-.695.248-1.29.174-1.414-.075-.124-.273-.199-.571-.348Z"/></svg>
+    </button>
+  </div>
+  <div class="dock-item" style="animation-delay:.45s">
+    <button class="dock-icon-btn" onclick="openModal('driverModal')" title="Hire Driver" aria-label="Hire Driver">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 16v-3.2c0-.4.15-.78.42-1.06L6.2 9.9A2 2 0 0 1 7.7 9.2h8.6a2 2 0 0 1 1.5.68l1.78 1.86c.28.28.42.66.42 1.06V16"/><path d="M4 16h16v2a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H7v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-2z"/><circle cx="7.5" cy="16" r="1.5" fill="currentColor" stroke="none"/><circle cx="16.5" cy="16" r="1.5" fill="currentColor" stroke="none"/></svg>
+    </button>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="cartModal">
+  <div class="panel">
+    <div class="panel-head"><h2>🛒 Your Cart</h2><button onclick="closeModal('cartModal')">×</button></div>
+    <div class="panel-body" id="cartItems"></div>
+    <div class="cart-footer">
+      <div style="display:flex;justify-content:space-between;margin-bottom:12px"><strong>Total</strong><strong id="cartTotal">R 0.00</strong></div>
+      <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="trackerModal">
+  <div class="panel">
+    <div class="panel-head"><h2>📍 Live Delivery Tracking</h2><button onclick="closeModal('trackerModal')">×</button></div>
+    <div class="panel-body">
+      <div class="tracker-status">
+        <span class="status-pill" id="deliveryStatus">Driver assigned</span>
+        <span id="etaText">ETA: 18 min</span>
+      </div>
+      <div class="map-wrap"><div id="deliveryMap"></div></div>
+      <p style="margin-top:12px;color:var(--muted)">The marker moves automatically to simulate a live delivery. In a production version, connect this to your driver's GPS/location API.</p>
+    </div>
+  </div>
+</div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<div id="paymentModal" class="modal-backdrop"><div class="modal payment-modal"><button class="modal-close" onclick="closeModal('paymentModal')">×</button><h2>💳 Secure card payment</h2><p class="muted">Demo checkout. Never enter real card details into this frontend-only demo.</p><div class="form-group"><label>Name on card</label><input id="cardName" placeholder="Demo User"></div><div class="form-group"><label>Card number</label><input id="cardNumber" inputmode="numeric" maxlength="19" placeholder="4242 4242 4242 4242"></div><div class="split"><div><label>Expiry</label><input id="cardExpiry" placeholder="MM/YY"></div><div><label>CVV</label><input id="cardCvv" maxlength="4" placeholder="123"></div></div><div class="form-group"><label>Delivery address</label><input id="deliveryAddress" placeholder="Street, suburb, city"></div><button class="btn-primary full" id="payNowBtn">Pay securely</button><div id="paymentStatus"></div></div></div>
+<div id="driverModal" class="modal-backdrop"><div class="modal wide-modal"><button class="modal-close" onclick="closeModal('driverModal')">×</button><h2>🚗 Hire a local delivery driver</h2><p class="muted">Drivers are separated from farmers and buyers and must have a verified vehicle profile.</p><div id="driverList" class="driver-list"></div></div></div>
+<script src="local-store.js"></script>
+<script src="farmlink-api.js"></script>
+<script src="theme.js"></script>
+<script src="sound-fx.js"></script>
+<script src="home.js"></script>
+<script src="dashboard.js"></script>
+<script src="nav-auth.js"></script>
+<script src="account-panel.js"></script>
+<script>
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+</script>
+</body>
+</html>

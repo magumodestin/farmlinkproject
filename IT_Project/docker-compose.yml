@@ -1,0 +1,37 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8080:80"
+    environment:
+      APP_ENV: development
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: farmlink
+      DB_USER: farmlink
+      DB_PASS: farmlink_dev_password
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: farmlink
+      MYSQL_USER: farmlink
+      MYSQL_PASSWORD: farmlink_dev_password
+      MYSQL_ROOT_PASSWORD: root_dev_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - farmlink_db:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/seed_marketplace.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_dev_password"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  farmlink_db:
