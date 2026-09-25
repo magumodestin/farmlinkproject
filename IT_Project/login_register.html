@@ -14,7 +14,33 @@
 
 <div class="form-card">
 
-  <div id="registerPanel">
+  <div id="loginPanel">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="loginUsername">Email</label>
+        <input type="email" id="loginUsername" name="loginUsername" placeholder="your@email.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="loginPassword">Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="loginPassword" name="loginPassword" placeholder="••••••••" autocomplete="current-password">
+          <button type="button" class="toggle-password" data-target="loginPassword" aria-label="Show/hide password">
+            👁️
+          </button>
+        </div>
+        <div class="fogort-pass"><a href="#" class="fogort-password">Forgot password?</a></div>
+      </div>
+      <button type="submit" class="btn-submit" id="loginBtn">Login</button>
+      <div id="loginFeedback" class="feedback" style="display: none;"></div>
+    </form>
+    <div class="toggle-area">
+      New to FarmLink?
+      <button type="button" class="toggle-link" id="switchToRegisterBtn">Register</button>
+    </div>
+  </div>
+
+  <div id="registerPanel" class="hidden-panel">
     <h2>Register</h2>
     <form id="registerForm">
       <div class="reg-photo-wrap">
@@ -45,16 +71,29 @@
         <input type="tel" id="phone" name="phone" placeholder="011 555 0148" autocomplete="tel" inputmode="numeric">
         <div id="phoneErrorMsg" class="error-text"></div>
       </div>
- 
-      <div class="form-group">
-        <label for="regPassword">Password</label>
-        <div class="password-wrapper">
-          <input type="password" id="regPassword" name="password" placeholder="••••••••" autocomplete="new-password">
-          <button type="button" class="toggle-password" data-target="regPassword" aria-label="Show/hide password">
-            👁️
-          </button>
+
+      <div class="password-row">
+        <div class="form-group">
+          <label for="regPassword">Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="regPassword" name="password" placeholder="••••••••" autocomplete="new-password">
+            <button type="button" class="toggle-password" data-target="regPassword" aria-label="Show/hide password">
+              👁️
+            </button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm password">
+            <button type="button" class="toggle-password" data-target="confirmPassword" aria-label="Show/hide password">
+              👁️
+            </button>
+          </div>
         </div>
       </div>
+      <div id="passwordMatchMsg" class="error-text"></div>
+
       <div id="sellerVerification" class="verification-panel hidden-panel">
         <h3>🌾 Seller verification</h3>
         <p>Seller accounts need verification before products can be listed.</p>
@@ -104,16 +143,6 @@
 
         <label class="check-row"><input type="checkbox" id="driverDeclaration"> I confirm the vehicle and driver details are accurate.</label>
       </div>
-      <div class="form-group">
-        <label for="confirmPassword">Confirm Password</label>
-        <div class="password-wrapper">
-          <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm password">
-          <button type="button" class="toggle-password" data-target="confirmPassword" aria-label="Show/hide password">
-            👁️
-          </button>
-        </div>
-        <div id="passwordMatchMsg" class="error-text"></div>
-      </div>
       <button type="submit" class="btn-submit" id="registerBtn">Register</button>
       <div id="registerFeedback" class="feedback" style="display: none;"></div>
     </form>
@@ -131,35 +160,6 @@
     <div id="verifyFeedback" class="feedback" style="display:none"></div>
     <div class="toggle-area">
       <button type="button" class="toggle-link" id="backToLoginBtn">Back to Login</button>
-    </div>
-  </div>
-
-  <div id="loginPanel" class="hidden-panel">
-    <h2>Login</h2>
-    <form id="loginForm">
-      <div class="form-group">
-        <label for="loginUsername">Email</label>
-        <input type="email" id="loginUsername" name="username" placeholder="your@email.com" autocomplete="username">
-      </div>
-      <div class="form-group">
-        <label for="loginPassword">Password</label>
-        <div class="password-wrapper">
-          <input type="password" id="loginPassword" name="password" placeholder="••••••••" autocomplete="current-password">
-          <button type="button" class="toggle-password" data-target="loginPassword" aria-label="Show/hide password">
-            👁️
-          </button>
-        </div>
-      </div>
-    <div class='fogort-pass'>
-      <a href="forgotpass.html" class="fogort-password">Forgot Password</a>
-    </div>
-      <button type="submit" class="btn-submit" id="loginBtn">Login</button>
-      <div id="loginFeedback" class="feedback" style="display: none;"></div>
-
-    </form>
-    <div class="toggle-area">
-      Don't have an account?
-      <button type="button" class="toggle-link" id="switchToRegisterBtn">Create account</button>
     </div>
   </div>
 

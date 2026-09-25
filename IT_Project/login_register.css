@@ -243,6 +243,12 @@ label {
   margin-bottom: 0.4rem;
 }
 
+/* Password + Confirm Password, each on its own line */
+.password-row {
+  display: flex;
+  flex-direction: column;
+}
+
 /* Password wrapper for eye icon */
 .password-wrapper {
   position: relative;
@@ -390,7 +396,19 @@ body.dark .error-text {
 .match-success {
   color: var(--green);
 }
-select,input{font:inherit}.verification-panel{margin:14px 0;padding:16px;border:1px solid #d9e6dc;border-radius:14px;background:#f6fbf7}.verification-panel h3{margin:0 0 6px}.verification-panel p{font-size:13px;color:#66736b}.check-row{display:flex;gap:8px;align-items:flex-start;font-size:13px}.check-row input{margin-top:3px}.hidden-panel{display:none!important}
+select,input{font:inherit}.verification-panel{margin:14px 0;padding:16px;border:1px solid #d9e6dc;border-radius:14px;background:#f6fbf7}.verification-panel h3{margin:0 0 6px}.verification-panel p{font-size:13px;color:#66736b}.check-row{display:flex;gap:8px;align-items:flex-start;font-size:13px;justify-content:flex-start}.check-row input{margin-top:3px}
+input[type="checkbox"]{
+  width:16px;
+  height:16px;
+  flex-shrink:0;
+  padding:0;
+  margin:0;
+  border:1px solid var(--border);
+  border-radius:4px;
+  background:var(--card);
+  box-shadow:none;
+  accent-color:var(--green);
+}.hidden-panel{display:none!important}
 
 
 #verifyPanel strong { display:block; margin:8px 0 18px; word-break:break-all; }

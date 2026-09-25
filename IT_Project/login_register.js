@@ -159,7 +159,9 @@ class ApiError extends Error {
 }
 
 function redirectForRole(role) {
-  return role === 'driver' ? 'driver-dashboard.html' : 'dashboard.html';
+  if (role === 'driver') return 'driver-dashboard.html';
+  if (role === 'seller') return 'sell-Product.html';
+  return 'dashboard.html';
 }
 
 // Where a link opens in a NEW tab (the usual case for email links),
