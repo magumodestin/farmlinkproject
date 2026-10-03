@@ -1,15 +1,25 @@
 (function () {
-  const MODAL_ID = 'farmlinkAccountModal';
+  const MODAL_ID = "farmlinkAccountModal";
   let currentUser = null; // cached merged {id, email, full_name, phone, role, avatar_url, created_at}
 
   function escapeHtml(s) {
-    return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    return String(s ?? "").replace(
+      /[&<>"']/g,
+      (c) =>
+        ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;",
+        })[c],
+    );
   }
 
   function injectStyles() {
-    if (document.getElementById('farmlinkAccountStyles')) return;
-    const style = document.createElement('style');
-    style.id = 'farmlinkAccountStyles';
+    if (document.getElementById("farmlinkAccountStyles")) return;
+    const style = document.createElement("style");
+    style.id = "farmlinkAccountStyles";
     style.textContent = `
       #${MODAL_ID} .modal{max-width:420px}
       .acct-card{text-align:center;padding:6px 4px 4px}
@@ -61,9 +71,9 @@
 
   function injectModal() {
     if (document.getElementById(MODAL_ID)) return;
-    const wrap = document.createElement('div');
+    const wrap = document.createElement("div");
     wrap.id = MODAL_ID;
-    wrap.className = 'modal-backdrop';
+    wrap.className = "modal-backdrop";
     wrap.innerHTML = `
       <div class="modal">
         <button class="modal-close" type="button" data-acct-close aria-label="Close">×</button>
@@ -71,83 +81,129 @@
         <div id="acctBody"><div class="acct-loading">Loading your account…</div></div>
       </div>`;
     document.body.appendChild(wrap);
-    wrap.addEventListener('click', e => { if (e.target === wrap) closeAccountPanel(); });
-    wrap.querySelector('[data-acct-close]').addEventListener('click', closeAccountPanel);
+    wrap.addEventListener("click", (e) => {
+      if (e.target === wrap) closeAccountPanel();
+    });
+    wrap
+      .querySelector("[data-acct-close]")
+      .addEventListener("click", closeAccountPanel);
   }
 
   function openAccountPanel() {
     injectStyles();
     injectModal();
-    document.getElementById(MODAL_ID).classList.add('show');
+    document.getElementById(MODAL_ID).classList.add("show");
     loadAndRender();
   }
   function closeAccountPanel() {
-    document.getElementById(MODAL_ID)?.classList.remove('show');
+    document.getElementById(MODAL_ID)?.classList.remove("show");
   }
 
   function initials(name) {
-    if (!name) return '?';
-    return name.trim().split(/\s+/).slice(0, 2).map(p => p[0].toUpperCase()).join('');
+    if (!name) return "?";
+    return name
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((p) => p[0].toUpperCase())
+      .join("");
   }
   function roleLabel(role) {
-    return { seller: '🌾 Seller / Farmer', buyer: '🛒 Buyer', driver: '🚚 Driver', admin: '🛠️ Admin' }[role] || (role || 'Member');
+    return (
+      {
+        seller: "🌾 Seller / Farmer",
+        buyer: "🛒 Buyer",
+        driver: "🚚 Driver",
+        admin: "🛠️ Admin",
+      }[role] ||
+      role ||
+      "Member"
+    );
   }
   function formatDate(d) {
     if (!d) return null;
-    const dt = new Date(String(d).replace(' ', 'T'));
+    const dt = new Date(String(d).replace(" ", "T"));
     if (isNaN(dt.getTime())) return null;
-    return dt.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+    return dt.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
   }
 
   function statusMeta(user) {
-    if (user.role !== 'seller' && user.role !== 'driver') {
-      return { label: '✅ No verification needed', cls: 'verified-badge', note: null };
+    if (user.role !== "seller" && user.role !== "driver") {
+      return {
+        label: "✅ No verification needed",
+        cls: "verified-badge",
+        note: null,
+      };
     }
     const s = user.verification_status;
-    if (s === 'approved' || s === 'verified') {
-      return { label: '✅ Approved', cls: 'verified-badge', note: user.role === 'seller' ? 'You can list products and livestock.' : 'You can accept delivery jobs.' };
+    if (s === "approved" || s === "verified") {
+      return {
+        label: "✅ Approved",
+        cls: "verified-badge",
+        note:
+          user.role === "seller"
+            ? "You can list products and livestock."
+            : "You can accept delivery jobs.",
+      };
     }
-    if (s === 'rejected') {
-      return { label: '⚠️ Rejected', cls: 'rejected-badge', note: 'Contact FarmLink support to resolve this.' };
+    if (s === "rejected") {
+      return {
+        label: "⚠️ Rejected",
+        cls: "rejected-badge",
+        note: "Contact FarmLink support to resolve this.",
+      };
     }
-    return { label: '⏳ Pending review', cls: 'pending-badge', note: user.role === 'seller' ? 'Listing is disabled until an admin approves your account.' : 'Accepting jobs is disabled until an admin approves your account.' };
+    return {
+      label: "⏳ Pending review",
+      cls: "pending-badge",
+      note:
+        user.role === "seller"
+          ? "Listing is disabled until an admin approves your account."
+          : "Accepting jobs is disabled until an admin approves your account.",
+    };
   }
 
   function avatarInner(user, name) {
-    return user.avatar_url ? `<img src="${escapeHtml(user.avatar_url)}" alt="Profile photo">` : escapeHtml(initials(name));
+    return user.avatar_url
+      ? `<img src="${escapeHtml(user.avatar_url)}" alt="Profile photo">`
+      : escapeHtml(initials(name));
   }
 
   function render(user) {
-    const body = document.getElementById('acctBody');
+    const body = document.getElementById("acctBody");
     if (!body) return;
     if (!user) {
       body.innerHTML = `<p class="muted" style="text-align:center">You're browsing as a guest.</p><div class="acct-actions"><a class="btn-primary" href="login_register.html">Create account</a></div>`;
       return;
     }
-    const name = user.full_name || user.name || user.email || 'FarmLink user';
+    const name = user.full_name || user.name || user.email || "FarmLink user";
     const status = statusMeta(user);
     const memberSince = formatDate(user.created_at);
-    const isDark = document.body.classList.contains('dark');
+    const isDark = document.body.classList.contains("dark");
 
     body.innerHTML = `
       <div class="acct-card">
         <div class="acct-avatar">${avatarInner(user, name)}</div>
         <div class="acct-name">${escapeHtml(name)}</div>
-        <div class="acct-email">${escapeHtml(user.email || '')}</div>
+        <div class="acct-email">${escapeHtml(user.email || "")}</div>
         <div class="acct-badges">
           <span class="acct-role-badge">${roleLabel(user.role)}</span>
           <span class="${status.cls}">${status.label}</span>
         </div>
         <div class="acct-rows">
-          ${user.phone ? `<div class="acct-row"><span>Phone</span><span>${escapeHtml(user.phone)}</span></div>` : ''}
+          ${user.phone ? `<div class="acct-row"><span>Phone</span><span>${escapeHtml(user.phone)}</span></div>` : ""}
           <div class="acct-row"><span>Role</span><span>${escapeHtml(roleLabel(user.role))}</span></div>
-          ${memberSince ? `<div class="acct-row"><span>Member since</span><span>${memberSince}</span></div>` : ''}
+          ${memberSince ? `<div class="acct-row"><span>Member since</span><span>${memberSince}</span></div>` : ""}
         </div>
-        ${status.note ? `<div class="acct-note">${escapeHtml(status.note)}</div>` : ''}
+        ${status.note ? `<div class="acct-note">${escapeHtml(status.note)}</div>` : ""}
         <div class="acct-actions">
           <button type="button" class="btn-primary js-acct-edit">✏️ Edit profile</button>
-          ${user.role === 'seller' ? '<a class="btn-secondary" href="sell-Product.html">Manage listings</a>' : ''}
-          ${user.role === 'driver' ? '<a class="btn-secondary" href="driver-dashboard.html">Driver dashboard</a>' : ''}
+          ${user.role === "seller" ? '<a class="btn-secondary" href="sell-products.html">Manage listings</a>' : ""}
+          ${user.role === "driver" ? '<a class="btn-secondary" href="driver-dashboard.html">Driver dashboard</a>' : ""}
           <button type="button" class="btn-outline js-acct-logout">Log Out</button>
         </div>
         <div class="acct-settings">
@@ -155,33 +211,44 @@
           <div class="acct-setting-row">
             <span class="acct-setting-label">
               🌓 Appearance
-              <span class="acct-setting-sub" style="display:block">${isDark ? 'Dark mode' : 'Light mode'}</span>
+              <span class="acct-setting-sub" style="display:block">${isDark ? "Dark mode" : "Light mode"}</span>
             </span>
             <label class="theme-switch">
-              <input type="checkbox" class="js-theme-switch" ${isDark ? 'checked' : ''}>
+              <input type="checkbox" class="js-theme-switch" ${isDark ? "checked" : ""}>
               <span class="theme-switch-track"></span>
             </label>
           </div>
         </div>
       </div>`;
 
-    body.querySelector('.js-acct-logout')?.addEventListener('click', async () => {
-      if (typeof supabaseClient !== 'undefined') await supabaseClient.auth.signOut();
-      window.location.href = 'home.html';
-    });
-    body.querySelector('.js-acct-edit')?.addEventListener('click', () => renderEditProfile(user));
+    body
+      .querySelector(".js-acct-logout")
+      ?.addEventListener("click", async () => {
+        try {
+          if (typeof supabaseClient !== "undefined")
+            await supabaseClient.auth.signOut();
+        } catch (e) {}
+        try {
+          localStorage.removeItem("farmlinkUser");
+          sessionStorage.setItem("farmlinkLoggedOut", "1");
+        } catch (e) {}
+        window.location.replace("home.html");
+      });
+    body
+      .querySelector(".js-acct-edit")
+      ?.addEventListener("click", () => renderEditProfile(user));
 
     window.FarmLinkTheme?.wire();
-    body.querySelector('.js-theme-switch')?.addEventListener('change', e => {
-      const sub = body.querySelector('.acct-setting-sub');
-      if (sub) sub.textContent = e.target.checked ? 'Dark mode' : 'Light mode';
+    body.querySelector(".js-theme-switch")?.addEventListener("change", (e) => {
+      const sub = body.querySelector(".acct-setting-sub");
+      if (sub) sub.textContent = e.target.checked ? "Dark mode" : "Light mode";
     });
   }
 
   function renderEditProfile(user) {
-    const body = document.getElementById('acctBody');
+    const body = document.getElementById("acctBody");
     if (!body) return;
-    const name = user.full_name || user.name || '';
+    const name = user.full_name || user.name || "";
     let pendingPhotoDataUrl = null;
 
     body.innerHTML = `
@@ -202,11 +269,11 @@
         </div>
         <div class="acct-field">
           <label for="acctEditPhone">Phone</label>
-          <input type="tel" id="acctEditPhone" value="${escapeHtml(user.phone || '')}" maxlength="40" placeholder="Optional">
+          <input type="tel" id="acctEditPhone" value="${escapeHtml(user.phone || "")}" maxlength="40" placeholder="Optional">
         </div>
         <div class="acct-field">
           <label for="acctEditEmail">Email</label>
-          <input type="email" id="acctEditEmail" value="${escapeHtml(user.email || '')}" disabled>
+          <input type="email" id="acctEditEmail" value="${escapeHtml(user.email || "")}" disabled>
         </div>
         <div class="acct-actions">
           <button type="button" class="btn-outline js-acct-back">Cancel</button>
@@ -214,81 +281,102 @@
         </div>
       </form>`;
 
-    body.querySelectorAll('.js-acct-back').forEach(btn => btn.addEventListener('click', () => render(currentUser)));
+    body
+      .querySelectorAll(".js-acct-back")
+      .forEach((btn) =>
+        btn.addEventListener("click", () => render(currentUser)),
+      );
 
-    const fileInput = body.querySelector('#acctPhotoInput');
-    body.querySelector('.js-acct-photo-btn')?.addEventListener('click', () => fileInput.click());
-    fileInput?.addEventListener('change', async () => {
+    const fileInput = body.querySelector("#acctPhotoInput");
+    body
+      .querySelector(".js-acct-photo-btn")
+      ?.addEventListener("click", () => fileInput.click());
+    fileInput?.addEventListener("change", async () => {
       const file = fileInput.files && fileInput.files[0];
       if (!file) return;
-      const errBox = body.querySelector('#acctEditError');
-      errBox.innerHTML = '';
+      const errBox = body.querySelector("#acctEditError");
+      errBox.innerHTML = "";
       try {
         pendingPhotoDataUrl = await resizeImageToDataUrl(file, 480);
-        const avatarEl = body.querySelector('#acctEditAvatar');
+        const avatarEl = body.querySelector("#acctEditAvatar");
         avatarEl.innerHTML = `<img src="${pendingPhotoDataUrl}" alt="New profile photo preview">`;
       } catch (err) {
         errBox.innerHTML = `<div class="acct-edit-error">${escapeHtml(err.message || "Couldn't read that image, please try another file.")}</div>`;
       }
     });
 
-    body.querySelector('#acctEditForm')?.addEventListener('submit', async e => {
-      e.preventDefault();
-      const errBox = body.querySelector('#acctEditError');
-      errBox.innerHTML = '';
-      const saveBtn = body.querySelector('#acctSaveBtn');
-      const full_name = body.querySelector('#acctEditName').value.trim();
-      const phone = body.querySelector('#acctEditPhone').value.trim();
-      if (!full_name) {
-        errBox.innerHTML = `<div class="acct-edit-error">Please enter your name.</div>`;
-        return;
-      }
-      const payload = { full_name, phone };
-      if (pendingPhotoDataUrl) payload.avatar_url = pendingPhotoDataUrl;
+    body
+      .querySelector("#acctEditForm")
+      ?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const errBox = body.querySelector("#acctEditError");
+        errBox.innerHTML = "";
+        const saveBtn = body.querySelector("#acctSaveBtn");
+        const full_name = body.querySelector("#acctEditName").value.trim();
+        const phone = body.querySelector("#acctEditPhone").value.trim();
+        if (!full_name) {
+          errBox.innerHTML = `<div class="acct-edit-error">Please enter your name.</div>`;
+          return;
+        }
+        const payload = { full_name, phone };
+        if (pendingPhotoDataUrl) payload.avatar_url = pendingPhotoDataUrl;
 
-      saveBtn.disabled = true;
-      saveBtn.textContent = 'Saving…';
-      try {
-        if (typeof supabaseClient === 'undefined' || !currentUser?.id) throw new Error('Could not find your account.');
-        const { error } = await supabaseClient
-          .from('profiles')
-          .upsert({ id: currentUser.id, ...payload });
-        if (error) throw new Error(error.message);
+        saveBtn.disabled = true;
+        saveBtn.textContent = "Saving…";
+        try {
+          if (typeof supabaseClient === "undefined" || !currentUser?.id)
+            throw new Error("Could not find your account.");
+          const { error } = await supabaseClient
+            .from("profiles")
+            .upsert({ id: currentUser.id, ...payload });
+          if (error) throw new Error(error.message);
 
-        const merged = { ...currentUser, ...payload };
-        currentUser = merged;
+          const merged = { ...currentUser, ...payload };
+          currentUser = merged;
 
-        document.querySelectorAll('.profile-name, #profileName').forEach(el => el.textContent = merged.full_name);
-        document.querySelectorAll('.profile-avatar, #profileAvatar').forEach(el => {
-          el.innerHTML = merged.avatar_url
-            ? `<img src="${escapeHtml(merged.avatar_url)}" alt="Profile photo" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
-            : escapeHtml(initials(merged.full_name));
-        });
-        render(merged);
-      } catch (err) {
-        errBox.innerHTML = `<div class="acct-edit-error">${escapeHtml(err.message || 'Could not save your changes. Please try again.')}</div>`;
-        saveBtn.disabled = false;
-        saveBtn.textContent = 'Save changes';
-      }
-    });
+          document
+            .querySelectorAll(".profile-name, #profileName")
+            .forEach((el) => (el.textContent = merged.full_name));
+          document
+            .querySelectorAll(".profile-avatar, #profileAvatar")
+            .forEach((el) => {
+              el.innerHTML = merged.avatar_url
+                ? `<img src="${escapeHtml(merged.avatar_url)}" alt="Profile photo" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
+                : escapeHtml(initials(merged.full_name));
+            });
+          render(merged);
+        } catch (err) {
+          errBox.innerHTML = `<div class="acct-edit-error">${escapeHtml(err.message || "Could not save your changes. Please try again.")}</div>`;
+          saveBtn.disabled = false;
+          saveBtn.textContent = "Save changes";
+        }
+      });
   }
 
   function resizeImageToDataUrl(file, maxDimension) {
     return new Promise((resolve, reject) => {
-      if (!file.type.startsWith('image/')) { reject(new Error('Please choose an image file.')); return; }
+      if (!file.type.startsWith("image/")) {
+        reject(new Error("Please choose an image file."));
+        return;
+      }
       const reader = new FileReader();
       reader.onerror = () => reject(new Error("Couldn't read that file."));
       reader.onload = () => {
         const img = new Image();
-        img.onerror = () => reject(new Error('That file is not a valid image.'));
+        img.onerror = () =>
+          reject(new Error("That file is not a valid image."));
         img.onload = () => {
-          const scale = Math.min(1, maxDimension / Math.max(img.width, img.height));
+          const scale = Math.min(
+            1,
+            maxDimension / Math.max(img.width, img.height),
+          );
           const w = Math.max(1, Math.round(img.width * scale));
           const h = Math.max(1, Math.round(img.height * scale));
-          const canvas = document.createElement('canvas');
-          canvas.width = w; canvas.height = h;
-          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          resolve(canvas.toDataURL('image/jpeg', 0.85));
+          const canvas = document.createElement("canvas");
+          canvas.width = w;
+          canvas.height = h;
+          canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL("image/jpeg", 0.85));
         };
         img.src = reader.result;
       };
@@ -299,22 +387,62 @@
   // Fetches the signed-in user's Supabase session + profiles row and
   // merges them into the shape render()/renderEditProfile() expect.
   async function fetchCurrentUser() {
-    if (typeof supabaseClient === 'undefined') return null;
-    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (typeof supabaseClient === "undefined") return null;
+    const {
+      data: { session },
+    } = await supabaseClient.auth.getSession();
     if (!session) return null;
 
     const { data: profile } = await supabaseClient
-      .from('profiles')
-      .select('*')
-      .eq('id', session.user.id)
+      .from("profiles")
+      .select("*")
+      .eq("id", session.user.id)
       .single();
 
+    // Fall back to the details saved at sign-up (user_metadata) when the
+    // profiles row is missing or has empty fields.
+    const meta = session.user.user_metadata || {};
     return {
+      ...profile,
       id: session.user.id,
       email: session.user.email,
       created_at: profile?.created_at || session.user.created_at,
-      ...profile
+      full_name: profile?.full_name || meta.full_name || "",
+      phone: profile?.phone || meta.phone || "",
+      role: profile?.role || meta.role || "buyer",
     };
+  }
+
+  // Shows the real name / role / photo in the navbar profile chip
+  // (instead of the email) on every page that loads this file.
+  async function refreshChip() {
+    let u;
+    try {
+      u = await fetchCurrentUser();
+    } catch (e) {
+      return;
+    }
+    if (!u) return;
+    currentUser = u;
+    const name = u.full_name || u.name || u.email || "Account";
+    const apply = () => {
+      document
+        .querySelectorAll("#profileName, .profile-name")
+        .forEach((el) => (el.textContent = name));
+      document
+        .querySelectorAll("#profileRole, .profile-role")
+        .forEach((el) => (el.textContent = u.role || ""));
+      document
+        .querySelectorAll("#profileAvatar, .profile-avatar")
+        .forEach((el) => {
+          el.innerHTML = u.avatar_url
+            ? `<img src="${escapeHtml(u.avatar_url)}" alt="" style="width:100%;height:100%;object-fit:cover">`
+            : escapeHtml(initials(name));
+        });
+    };
+    apply();
+    setTimeout(apply, 800); // re-apply in case nav-auth.js writes after us
+    setTimeout(apply, 2000);
   }
 
   async function loadAndRender() {
@@ -323,16 +451,19 @@
   }
 
   function wireTriggers() {
-    document.querySelectorAll('.profile-chip, #accountBtn').forEach(el => {
+    document.querySelectorAll(".profile-chip, #accountBtn").forEach((el) => {
       if (el.dataset.acctWired) return;
-      el.dataset.acctWired = '1';
-      el.style.cursor = 'pointer';
-      el.addEventListener('click', openAccountPanel);
+      el.dataset.acctWired = "1";
+      el.style.cursor = "pointer";
+      el.addEventListener("click", openAccountPanel);
     });
   }
 
   window.openAccountPanel = openAccountPanel;
   window.closeAccountPanel = closeAccountPanel;
 
-  document.addEventListener('DOMContentLoaded', wireTriggers);
+  document.addEventListener("DOMContentLoaded", () => {
+    wireTriggers();
+    refreshChip();
+  });
 })();

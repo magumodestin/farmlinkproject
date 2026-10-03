@@ -5,6 +5,7 @@ function initials(name) {
 
 async function logout() {
   await supabaseClient.auth.signOut();
+  try { localStorage.removeItem('farmlinkUser'); } catch (_) {}
   window.location.href = 'login_register.html';
 }
 

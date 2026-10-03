@@ -1,14 +1,38 @@
-// sell.js
-// Powers sell-Product.html: confirms the signed-in user is an approved
-// seller, wires the product + livestock forms to api/marketplace.php, and
-// renders the seller's own listings.
+// sell.js - sell-products.html (Supabase version)
+// Confirms the signed-in user is a seller, saves product + livestock listings to
+// Supabase tables `products` and `livestock`, and shows the seller's own listings.
+// Photos chosen with the Upload button (sell-image.js) go to the Storage bucket
+// `listing-images`; if that bucket is not set up the photo is saved inline instead.
 
 function escapeHtml(s){
   return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 function money(n){ return `R ${Number(n||0).toFixed(2)}`; }
 
-let CURRENT_USER = null;
+let CURRENT_USER = null;   // { id, email, role, verification_status, ... }
+
+async function loadCurrentUser(){
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return null;
+  const { data: profile, error } = await supabaseClient
+    .from('profiles').select('*').eq('id', session.user.id).single();
+  if (error) console.warn('profiles lookup failed:', error.message);
+  const meta = session.user.user_metadata || {};
+  return {
+    ...(profile || {}),
+    id: session.user.id,
+    email: session.user.email,
+    role: (profile && profile.role) || meta.role || 'buyer'
+  };
+}
+
+function normaliseStatus(user){
+  // If the profiles table has no verification_status column at all, there is no
+  // verification system yet, so sellers are treated as approved.
+  if (!('verification_status' in user)) return 'approved';
+  const v = user.verification_status || 'pending';
+  return v === 'verified' ? 'approved' : v;
+}
 
 function renderStatusBanner(user){
   const banner = document.getElementById('statusBanner');
@@ -22,14 +46,13 @@ function renderStatusBanner(user){
     lockedPanel.innerHTML = `
       <div class="big-icon">🌾</div>
       <h2>Only seller accounts can list on FarmLink</h2>
-      <p class="muted" style="margin:10px 0 16px">You're signed in as a ${escapeHtml(user.role)}. Register a seller account (or ask an admin to add seller access) to start listing products or livestock.</p>
+      <p class="muted" style="margin:10px 0 16px">You're signed in as a ${escapeHtml(user.role)}. Register a seller account to start listing products or livestock.</p>
       <a href="login_register.html">Create a seller account →</a>`;
     return;
   }
 
   lockedPanel.style.display = 'none';
-
-  const status = user.verification_status || 'pending';
+  const status = normaliseStatus(user);
   if (status === 'approved') {
     banner.innerHTML = `<div class="status-banner approved"><strong>✅ You're a verified seller</strong>Your listings go live immediately once submitted.</div>`;
     sellerArea.style.display = 'block';
@@ -37,7 +60,7 @@ function renderStatusBanner(user){
   } else if (status === 'rejected') {
     banner.innerHTML = `<div class="status-banner rejected"><strong>⚠️ Seller verification was rejected</strong>Contact FarmLink support to resolve this before you can list anything.</div>`;
     sellerArea.style.display = 'block';
-    setFormsEnabled(false, 'Verification rejected — contact support');
+    setFormsEnabled(false, 'Verification rejected - contact support');
   } else {
     banner.innerHTML = `<div class="status-banner pending"><strong>⏳ Seller verification pending</strong>You can prepare your listings below, but submitting is disabled until an admin approves your account.</div>`;
     sellerArea.style.display = 'block';
@@ -46,9 +69,8 @@ function renderStatusBanner(user){
 }
 
 function setFormsEnabled(enabled, disabledLabel){
-  const pBtn = document.getElementById('pSubmitBtn');
-  const lBtn = document.getElementById('lSubmitBtn');
-  [pBtn, lBtn].forEach(btn => {
+  ['pSubmitBtn','lSubmitBtn'].forEach(id => {
+    const btn = document.getElementById(id);
     if (!btn) return;
     btn.disabled = !enabled;
     btn.style.opacity = enabled ? '1' : '.6';
@@ -61,8 +83,7 @@ function setupTabs(){
   const tabs = document.querySelectorAll('.sell-tab');
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
-      // The WhatsApp tab has no matching panel by design (it opens WhatsApp
-      // instead of switching views) — leave the currently-open panel as is.
+      // The WhatsApp button has no matching panel - leave the open panel as is.
       if (!document.querySelector(`.sell-panel[data-panel="${tab.dataset.tab}"]`)) return;
       tabs.forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
@@ -75,6 +96,24 @@ function setupTabs(){
 function showMsg(el, text, ok){
   el.textContent = text;
   el.className = 'form-msg ' + (ok ? 'ok' : 'err');
+}
+
+// Uploaded photos arrive as data: URLs (from sell-image.js). Move them to Storage when
+// possible so the database only holds a short link. Falls back to the inline data.
+async function resolveImage(value){
+  if (!value) return null;
+  if (!value.startsWith('data:')) return value;
+  try {
+    const blob = await (await fetch(value)).blob();
+    const path = `${CURRENT_USER.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
+    const { error } = await supabaseClient.storage.from('listing-images')
+      .upload(path, blob, { contentType: 'image/jpeg' });
+    if (error) throw error;
+    return supabaseClient.storage.from('listing-images').getPublicUrl(path).data.publicUrl;
+  } catch (err) {
+    console.warn('Photo upload to Storage failed, saving inline instead:', err.message || err);
+    return value;
+  }
 }
 
 function setupProductForm(){
@@ -93,21 +132,24 @@ function setupProductForm(){
       showMsg(msg, 'Please fill in name, unit, location, price and stock correctly.', false);
       return;
     }
-    const payload = {
-      name, price, stock, unit, location,
-      category: document.getElementById('pCategory').value,
-      description: document.getElementById('pDescription').value.trim(),
-      image_url: document.getElementById('pImage').value.trim() || null,
-      is_service: document.getElementById('pIsService').checked
-    };
     btn.disabled = true; btn.textContent = 'Listing…';
     try {
-      await FarmLinkAPI.createProduct(payload);
-      showMsg(msg, 'Product listed! It\'s now visible on Browse Products.', true);
+      const image_url = await resolveImage(document.getElementById('pImage').value.trim());
+      const { error } = await supabaseClient.from('products').insert({
+        seller_id: CURRENT_USER.id,
+        name, price, stock, unit, location,
+        category: document.getElementById('pCategory').value,
+        description: document.getElementById('pDescription').value.trim(),
+        image_url,
+        is_service: document.getElementById('pIsService').checked
+      });
+      if (error) throw error;
+      showMsg(msg, "Product listed! It's now visible on Browse Products.", true);
       window.showToast?.('Product listed successfully', 'success');
       form.reset();
       loadMyListings();
     } catch (err) {
+      console.error('Create product failed:', err);
       showMsg(msg, err.message || 'Could not list this product.', false);
     } finally {
       btn.disabled = false; btn.textContent = 'List product';
@@ -132,29 +174,32 @@ function setupLivestockForm(){
     }
     const ageVal = document.getElementById('lAge').value;
     const weightVal = document.getElementById('lWeight').value;
-    const payload = {
-      listing_title, price, quantity, location,
-      species: document.getElementById('lSpecies').value,
-      breed: document.getElementById('lBreed').value.trim() || null,
-      sex: document.getElementById('lSex').value,
-      age_months: ageVal ? parseInt(ageVal, 10) : null,
-      weight_kg: weightVal ? parseFloat(weightVal) : null,
-      price_type: document.getElementById('lPriceType').value,
-      description: document.getElementById('lDescription').value.trim(),
-      health_status: document.getElementById('lHealth').value.trim() || null,
-      vaccination_status: document.getElementById('lVaccination').value.trim() || null,
-      identification_reference: document.getElementById('lIdRef').value.trim() || null,
-      transport_available: document.getElementById('lTransport').checked,
-      image_url: document.getElementById('lImage').value.trim() || null
-    };
     btn.disabled = true; btn.textContent = 'Listing…';
     try {
-      await FarmLinkAPI.createLivestock(payload);
-      showMsg(msg, 'Livestock listed! It\'s now visible in the Livestock section.', true);
+      const image_url = await resolveImage(document.getElementById('lImage').value.trim());
+      const { error } = await supabaseClient.from('livestock').insert({
+        seller_id: CURRENT_USER.id,
+        listing_title, price, quantity, location,
+        species: document.getElementById('lSpecies').value,
+        breed: document.getElementById('lBreed').value.trim() || null,
+        sex: document.getElementById('lSex').value,
+        age_months: ageVal ? parseInt(ageVal, 10) : null,
+        weight_kg: weightVal ? parseFloat(weightVal) : null,
+        price_type: document.getElementById('lPriceType').value,
+        description: document.getElementById('lDescription').value.trim(),
+        health_status: document.getElementById('lHealth').value.trim() || null,
+        vaccination_status: document.getElementById('lVaccination').value.trim() || null,
+        identification_reference: document.getElementById('lIdRef').value.trim() || null,
+        transport_available: document.getElementById('lTransport').checked,
+        image_url
+      });
+      if (error) throw error;
+      showMsg(msg, "Livestock listed! It's now visible in the Livestock section.", true);
       window.showToast?.('Livestock listed successfully', 'success');
       form.reset();
       loadMyListings();
     } catch (err) {
+      console.error('Create livestock failed:', err);
       showMsg(msg, err.message || 'Could not list this animal.', false);
     } finally {
       btn.disabled = false; btn.textContent = 'List livestock';
@@ -163,19 +208,21 @@ function setupLivestockForm(){
 }
 
 function listingCard(kind, item){
+  const thumb = item.image_url
+    ? `<img src="${escapeHtml(item.image_url)}" alt="" style="width:100%;height:120px;object-fit:cover;border-radius:10px;margin-bottom:10px">` : '';
   if (kind === 'product') {
-    return `<div class="listing-card">
+    return `<div class="listing-card">${thumb}
       <span class="kind-pill">${item.is_service ? 'Service' : 'Product'}</span>
       <h3>${escapeHtml(item.name)}</h3>
       <div class="price">${money(item.price)} / ${escapeHtml(item.unit)}</div>
-      <div class="meta">📍 ${escapeHtml(item.location || '—')}<br>${escapeHtml(item.category)} · ${item.stock} in stock<br>Status: ${escapeHtml(item.status)}</div>
+      <div class="meta">📍 ${escapeHtml(item.location || '-')}<br>${escapeHtml(item.category)} · ${item.stock} in stock<br>Status: ${escapeHtml(item.status || 'live')}</div>
     </div>`;
   }
-  return `<div class="listing-card livestock">
+  return `<div class="listing-card livestock">${thumb}
     <span class="kind-pill">Livestock</span>
     <h3>${escapeHtml(item.listing_title)}</h3>
-    <div class="price">${money(item.price)} (${item.price_type.replace('_',' ')})</div>
-    <div class="meta">📍 ${escapeHtml(item.location)}<br>${escapeHtml(item.species)} · qty ${item.quantity}<br>Status: ${escapeHtml(item.status)}</div>
+    <div class="price">${money(item.price)} (${escapeHtml(String(item.price_type || '').replace('_',' '))})</div>
+    <div class="meta">📍 ${escapeHtml(item.location)}<br>${escapeHtml(item.species)} · qty ${item.quantity}<br>Status: ${escapeHtml(item.status || 'live')}</div>
   </div>`;
 }
 
@@ -193,59 +240,45 @@ async function loadMyListings(){
   const empty = document.getElementById('listingsEmpty');
   const loading = document.getElementById('listingsLoading');
   if (!grid || !CURRENT_USER) return;
-  if (loading) loading.style.display = 'none'; // replaced by skeleton cards below
+  if (loading) loading.style.display = 'none';
   empty.style.display = 'none';
   grid.innerHTML = skeletonListingCards(4);
   try {
     const [prodRes, liveRes] = await Promise.all([
-      FarmLinkAPI.products(),
-      FarmLinkAPI.livestock()
+      supabaseClient.from('products').select('*').eq('seller_id', CURRENT_USER.id).order('created_at', { ascending: false }),
+      supabaseClient.from('livestock').select('*').eq('seller_id', CURRENT_USER.id).order('created_at', { ascending: false })
     ]);
-    const myProducts = (prodRes.products || []).filter(p => Number(p.seller_id) === Number(CURRENT_USER.id));
-    const myLivestock = (liveRes.livestock || []).filter(l => Number(l.seller_id) === Number(CURRENT_USER.id));
+    if (prodRes.error) throw prodRes.error;
+    if (liveRes.error) throw liveRes.error;
+    const myProducts = prodRes.data || [];
+    const myLivestock = liveRes.data || [];
     window.mySellerListings = { products: myProducts, livestock: myLivestock };
     const cards = [
       ...myProducts.map(p => listingCard('product', p)),
       ...myLivestock.map(l => listingCard('livestock', l))
     ];
     grid.innerHTML = cards.join('');
+    empty.textContent = "You haven't listed anything yet - use the tabs above to add a product or a livestock listing.";
     empty.style.display = cards.length ? 'none' : 'block';
   } catch (err) {
+    console.error('Load listings failed:', err);
     grid.innerHTML = '';
-    empty.textContent = 'Could not load your listings right now.';
+    empty.textContent = 'Could not load your listings: ' + (err.message || 'unknown error');
     empty.style.display = 'block';
   }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const cached = JSON.parse(localStorage.getItem('farmlinkUser') || 'null');
-  if (!cached) { window.location.replace('login_register.html'); return; }
-  // Migrate the old 'verified' status value (see comment history in
-  // local-store.js) to 'approved', which is what this page actually checks.
-  if (cached.verification_status === 'verified') {
-    cached.verification_status = 'approved';
-    localStorage.setItem('farmlinkUser', JSON.stringify(cached));
-  }
+  const user = await loadCurrentUser();
+  if (!user) { window.location.replace('login_register.html'); return; }
+  CURRENT_USER = user;
+  window.CURRENT_USER = user;
 
   setupTabs();
   setupProductForm();
   setupLivestockForm();
   document.getElementById('refreshListingsBtn')?.addEventListener('click', loadMyListings);
 
-  // Use the live session (api/auth.php?action=me) as the source of truth for
-  // role + verification_status where possible — it reflects the account as
-  // it stood at last login/verification, which is more trustworthy than the
-  // cached copy in localStorage. Fall back to the cached copy if the API
-  // can't be reached (e.g. backend not running in this environment).
-  try {
-    const { user } = await FarmLinkAPI.me();
-    if (!user) { window.location.replace('login_register.html'); return; }
-    CURRENT_USER = user;
-  } catch (err) {
-    CURRENT_USER = cached;
-  }
-
   renderStatusBanner(CURRENT_USER);
-  window.CURRENT_USER = CURRENT_USER;
   if (CURRENT_USER.role === 'seller') loadMyListings();
 });

@@ -11,9 +11,9 @@ async function farmlinkLogout() {
 
 function ensureSellerNavLink() {
   document.querySelectorAll('.menu-panel').forEach(panel => {
-    if (panel.querySelector('.js-seller-link')) return;
+    if (panel.querySelector('.js-seller-link') || panel.querySelector('a[href*="sell-products"]')) return;
     const link = document.createElement('a');
-    link.href = 'sell-Product.html';
+    link.href = 'sell-products.html';
     link.className = 'nav-link js-seller-link';
     link.textContent = 'Sell / My Listings';
     const divider = panel.querySelector('.menu-divider');
