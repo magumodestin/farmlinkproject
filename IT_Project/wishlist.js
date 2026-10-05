@@ -1,5 +1,6 @@
 (function () {
   'use strict';
+  console.info('wishlist.js loaded');
 
   const TABLE = 'saved_products';
   const $ = (id) => document.getElementById(id);
@@ -8,8 +9,8 @@
   let saved = [];
   let savedSet = new Set();
   const cardClones = new Map();
-  let resolveReady;
-  const ready = new Promise((r) => (resolveReady = r));
+  let isReady = false;
+  const queue = [];
 
   const norm = (s) => (s || '').replace(/\s+/g, ' ').trim();
 
@@ -84,17 +85,26 @@
     updateBadge();
   }
 
-  async function setSaved(key, on) {
-    await ready;
-    if (on === savedSet.has(key)) return;
+  function withTimeout(promise, ms) {
+    return Promise.race([
+      promise,
+      new Promise((_, reject) => setTimeout(() => reject(new Error('timed out')), ms)),
+    ]);
+  }
 
-    if (on) { saved.unshift(key); savedSet.add(key); }
-    else { saved = saved.filter((k) => k !== key); savedSet.delete(key); }
+  function applyLocal(key, on) {
+    if (on) {
+      if (!savedSet.has(key)) { saved.unshift(key); savedSet.add(key); }
+    } else {
+      saved = saved.filter((k) => k !== key);
+      savedSet.delete(key);
+    }
     persistLocal();
     applyAll();
     if (isSavedActive()) renderSaved();
-    if (on) toast('Saved ♥');
+  }
 
+  async function syncRemote(key, on) {
     if (!userId) return;
     try {
       const { error } = on
@@ -105,13 +115,17 @@
       if (error) throw error;
     } catch (err) {
       console.error('Saved products sync failed:', err);
-      if (on) { saved = saved.filter((k) => k !== key); savedSet.delete(key); }
-      else { saved.unshift(key); savedSet.add(key); }
-      persistLocal();
-      applyAll();
-      if (isSavedActive()) renderSaved();
-      toast('Could not update saved items. Please try again.');
+      applyLocal(key, !on);
+      toast('Could not save: ' + String((err && err.message) || err).slice(0, 90));
     }
+  }
+
+  function setSaved(key, on) {
+    if (on === savedSet.has(key)) return;
+    applyLocal(key, on);
+    if (on) toast('Saved ♥');
+    if (!isReady) { queue.push({ key, on }); return; }
+    syncRemote(key, on);
   }
 
   const isSavedActive = () => $('saved')?.classList.contains('active');
@@ -258,26 +272,30 @@
 
   async function init() {
     try {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (!session) { resolveReady(); return; }
-      userId = session.user.id;
+      const { data: { session } } = await withTimeout(supabaseClient.auth.getSession(), 5000);
+      if (session) {
+        userId = session.user.id;
+        loadLocal();
+        applyAll();
 
-      loadLocal();
-      applyAll();
+        const { data, error } = await withTimeout(
+          supabaseClient.from(TABLE).select('product_key').order('created_at', { ascending: false }),
+          5000
+        );
+        if (error) throw error;
 
-      const { data, error } = await supabaseClient
-        .from(TABLE)
-        .select('product_key')
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-
-      setList((data || []).map((r) => r.product_key));
-      persistLocal();
+        setList((data || []).map((r) => r.product_key));
+        persistLocal();
+      }
     } catch (err) {
       console.error('Could not load saved products:', err);
     }
+    isReady = true;
+    queue.splice(0).forEach(({ key, on }) => {
+      if (on !== savedSet.has(key)) applyLocal(key, on);
+      syncRemote(key, on);
+    });
     applyAll();
-    resolveReady();
     if (location.hash === '#saved') showSaved();
     else if (isSavedActive()) renderSaved();
   }

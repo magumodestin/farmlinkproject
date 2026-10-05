@@ -23,3 +23,10 @@ create policy "Users can save products for themselves"
 create policy "Users can unsave their own products"
   on public.saved_products for delete
   using (auth.uid() = user_id);
+
+
+  /*keep this to run on supabase for output 
+  select table_name from information_schema.tables where table_schema = 'public' order by table_name;
+
+  */
+  

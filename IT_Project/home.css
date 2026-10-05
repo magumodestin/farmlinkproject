@@ -108,8 +108,6 @@ body.dark.dashboard-page {
   background-attachment: fixed;
 }
 
-
-
 .navbar {
   background: var(--card);
   display: flex;
@@ -160,9 +158,6 @@ body.dark.dashboard-page {
 body.dark .logo-text-main { fill: #ffffff; }
 body.dark .logo-text-sub { fill: #a8d9bc; }
 
-/* Horizontal nav links — desktop only. Hidden by default and switched on
-   at the 901px breakpoint below, where the hamburger/menu-dropdown is
-   hidden in its place. */
 .nav-links {
   display: none;
   gap: 24px;
@@ -318,9 +313,6 @@ body.dark .search-icon {
 
 .mobile-menu.show { display: flex; }
 
-
-
-
 body.dark .hero { background: linear-gradient(135deg, #12271a 0%, var(--card) 65%); }
 
 .hero h1 {
@@ -395,7 +387,6 @@ body.dark .hero { background: linear-gradient(135deg, #12271a 0%, var(--card) 65
 
 body.dark .badge { background: #1e293b; }
 body.dark .trust-bar { background: #1e293b; }
-
 
 .section-header {
   display: flex;
@@ -554,7 +545,6 @@ body.dark .trust-bar { background: #1e293b; }
   box-shadow: 0 4px 10px rgba(22, 163, 74, .2);
 }
 
-/* Location display */
 .location {
   display: flex;
   align-items: center;
@@ -813,7 +803,6 @@ body.dark .how-icon { background: #14301c; }
   color: var(--muted);
 }
 
-/* --- SVG map pin icon (replaces the lollipop background-image) --- */
 .pin-icon {
   width: 16px;
   height: 16px;
@@ -1158,7 +1147,6 @@ body.is-authed .guest-only { display: none !important; }
   .section-header h2 { font-size: 20px; }
 }
 
-
 .icon-btn{position:relative;border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:9px;padding:9px 11px;cursor:pointer;font-size:18px}
 .icon-btn:hover{border-color:var(--green);transform:translateY(-1px)}
 .cart-count{position:absolute;top:-7px;right:-7px;background:#ef4444;color:#fff;border-radius:999px;font-size:10px;min-width:18px;height:18px;display:grid;place-items:center;font-weight:700}
@@ -1336,14 +1324,10 @@ body.dark .skeleton { background: linear-gradient(90deg, #1c2b22 25%, #24382c 37
   .toast { max-width: none; }
 }
 
-/* =====================================================
-   HOME PAGE (moved from home.html)
-   ===================================================== */
 html {
   scroll-behavior: smooth;
 }
 
-/* ===== HERO: photo backdrop like the old design, with the full photo sharp on the right ===== */
 .cover-hero {
   position: relative;
   isolation: isolate;
@@ -1354,7 +1338,7 @@ html {
   padding: 40px 5%;
   background: #0b2412;
 }
-/* soft photo background across the whole banner */
+
 .cover-hero::before {
   content: "";
   position: absolute;
@@ -1363,7 +1347,7 @@ html {
   background: url("imgs/project.png") center / cover no-repeat;
   filter: blur(18px);
 }
-/* dark overlay so the text is easy to read */
+
 .cover-hero::after {
   content: "";
   position: absolute;
@@ -1395,7 +1379,7 @@ html {
   margin-bottom: 26px;
   max-width: 560px;
 }
-/* the full, uncropped photo (head included), sharp, on the right */
+
 .cover-hero-img {
   position: absolute;
   top: 0;
@@ -1505,7 +1489,6 @@ body.dark .cta-band {
   font-weight: 600;
 }
 
-/* Desktop navigation (home page) */
 .home-nav .nav-links {
   gap: 22px;
 }
@@ -1534,10 +1517,9 @@ body.dark .cta-band {
   color: var(--green);
 }
 
-/* Medium screens: keep the full menu bar, just tighter so it fits */
 @media (min-width: 901px) and (max-width: 1299px) {
   .home-nav .nav-links .nav-auth {
-    display: none; /* Log In / Sign Up are already in the hero */
+    display: none;
   }
 }
 @media (min-width: 901px) and (max-width: 1199px) {
@@ -1552,7 +1534,6 @@ body.dark .cta-band {
   }
 }
 
-/* Tablet / phone: photo moves under the text */
 @media (max-width: 900px) {
   .cover-hero {
     min-height: auto;
@@ -1590,7 +1571,6 @@ body.dark .cta-band {
   }
 }
 
-/* ===== Saved products (heart / wishlist) ===== */
 .saved-count {
   display: inline-flex;
   align-items: center;
@@ -1646,7 +1626,6 @@ body.dark .cta-band {
 }
 .saved-toast.show { opacity: 1; transform: translate(-50%, 0); }
 
-/* ===== Navbar fit: keep every link on ONE line, scale down on smaller desktops ===== */
 .navbar .logo,
 .navbar .nav-right { flex-shrink: 0; }
 
@@ -1655,7 +1634,6 @@ body.dark .cta-band {
   letter-spacing: 0;
 }
 
-/* 1280px – 1399px: slightly tighter */
 @media (min-width: 1280px) and (max-width: 1399px) {
   .navbar { padding-left: 3%; padding-right: 3%; }
   .navbar .logo svg { width: 200px; }
@@ -1663,7 +1641,6 @@ body.dark .cta-band {
   .nav-links a { font-size: 13.5px; }
 }
 
-/* 1101px – 1279px: smaller text, avatar-only profile chip */
 @media (min-width: 1101px) and (max-width: 1279px) {
   .navbar { padding-left: 3%; padding-right: 3%; }
   .navbar .logo svg { width: 185px; }
@@ -1674,16 +1651,13 @@ body.dark .cta-band {
   .profile-chip .profile-info { display: none; }
 }
 
-/* 901px – 1100px: not enough room for 8 links, so use the hamburger menu */
 @media (min-width: 901px) and (max-width: 1100px) {
   .nav-links { display: none; }
   .menu-dropdown { display: block; }
 }
 
-/* Saved page spacing (same side padding as the other pages) */
 #saved .container { padding: 40px 5%; }
 
-/* ===== Filled red heart when a product is saved ===== */
 .product-card .heart.liked {
   color: #ef4444 !important;
   background: #fff;
@@ -1697,4 +1671,8 @@ body.dark .cta-band {
 .product-card .heart:not(.liked) svg,
 .product-card .heart:not(.liked) svg * {
   fill: none;
+}
+
+.product-card .heart {
+  z-index: 5;
 }

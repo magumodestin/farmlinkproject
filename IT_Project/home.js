@@ -1662,8 +1662,8 @@ function productCard(p) {
   const priceHtml = p.onSale
     ? `<span class="price-was">${money(p.price)}</span> ${money(p.salePrice)} <span class="price-unit">/ ${p.unit}</span>`
     : `${money(p.price)} <span class="price-unit">/ ${p.unit}</span>`;
-  return `<div class="product-card">
-   <div class="product-img">${tagHtml}<span class="heart" onclick="this.textContent=this.textContent==='♡'?'♥':'♡';this.classList.toggle('liked')">♡</span><img src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.onerror=null;this.src=productThumb({id:'${p.id}',category:'${p.category}'});"></div>
+  return `<div class="product-card" data-id="${p.id}">
+   <div class="product-img">${tagHtml}<span class="heart">♡</span><img src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.onerror=null;this.src=productThumb({id:'${p.id}',category:'${p.category}'});"></div>
    <div class="product-info">
      <span class="product-category-chip">${p.category}</span>
      <h3>${p.name}</h3>
