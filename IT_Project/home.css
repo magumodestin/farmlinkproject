@@ -1335,3 +1335,257 @@ body.dark .skeleton { background: linear-gradient(90deg, #1c2b22 25%, #24382c 37
   .toast-stack { left: 12px; right: 12px; }
   .toast { max-width: none; }
 }
+
+/* =====================================================
+   HOME PAGE (moved from home.html)
+   ===================================================== */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ===== HERO: photo backdrop like the old design, with the full photo sharp on the right ===== */
+.cover-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 560px;
+  display: flex;
+  align-items: center;
+  padding: 40px 5%;
+  background: #0b2412;
+}
+/* soft photo background across the whole banner */
+.cover-hero::before {
+  content: "";
+  position: absolute;
+  inset: -30px;
+  z-index: -2;
+  background: url("imgs/project.png") center / cover no-repeat;
+  filter: blur(18px);
+}
+/* dark overlay so the text is easy to read */
+.cover-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    90deg,
+    rgba(10, 30, 15, 0.92) 0%,
+    rgba(10, 30, 15, 0.78) 45%,
+    rgba(10, 30, 15, 0.3) 100%
+  );
+}
+.cover-hero-inner {
+  position: relative;
+  z-index: 2;
+  padding: 0;
+  max-width: 600px;
+  color: #fff;
+}
+.cover-hero-inner h1 {
+  font-size: 46px;
+  line-height: 1.15;
+  margin-bottom: 14px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+.cover-hero-inner p {
+  font-size: 16.5px;
+  color: #eef7ef;
+  margin-bottom: 26px;
+  max-width: 560px;
+}
+/* the full, uncropped photo (head included), sharp, on the right */
+.cover-hero-img {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+}
+.cover-hero-img img {
+  display: block;
+  width: min(560px, 44vw);
+  height: auto;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 20%);
+  mask-image: linear-gradient(to right, transparent 0, #000 20%);
+}
+.cover-btns {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.cover-btns .btn-green {
+  padding: 13px 26px;
+  font-size: 15px;
+  border-radius: 9px;
+}
+.btn-white-outline {
+  padding: 12px 25px;
+  border: 1.5px solid #fff;
+  color: #fff;
+  border-radius: 9px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.btn-white-outline:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+.cover-guest-link {
+  display: inline-block;
+  margin-top: 22px;
+  font-size: 13.5px;
+  color: #dcefe0;
+}
+.cover-guest-link:hover {
+  text-decoration: underline;
+}
+
+.menu-admin-link {
+  display: block;
+  text-align: center;
+  margin-top: 4px;
+  padding: 9px 10px;
+  font-size: 12px;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+}
+.menu-admin-link:hover {
+  color: var(--green);
+}
+
+.trust-strip {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 26px 5%;
+  background: var(--card);
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 8px;
+}
+.section-sub {
+  text-align: center;
+  color: var(--muted);
+  max-width: 560px;
+  margin: 0 auto 30px;
+}
+
+.cta-band {
+  background: #eefbf1;
+  padding: 50px 5%;
+  text-align: center;
+}
+body.dark .cta-band {
+  background: #122417;
+}
+.cta-band h2 {
+  margin-bottom: 10px;
+}
+.cta-band p {
+  color: var(--muted);
+  margin-bottom: 22px;
+}
+
+.site-footer {
+  padding: 26px 5% 34px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  border-top: 1px solid var(--border);
+}
+.site-footer a {
+  color: var(--green);
+  font-weight: 600;
+}
+
+/* Desktop navigation (home page) */
+.home-nav .nav-links {
+  gap: 22px;
+}
+.home-nav .nav-links a {
+  white-space: nowrap;
+}
+.home-nav .nav-links a:hover {
+  color: var(--green);
+}
+.nav-links .nav-auth {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-left: 6px;
+}
+.nav-links a.btn-green,
+.nav-links a.btn-outline {
+  padding: 9px 18px;
+  border-bottom-width: 1.5px;
+}
+.nav-links a.btn-green,
+.nav-links a.btn-green:hover {
+  color: #fff;
+}
+.nav-links a.btn-outline {
+  color: var(--green);
+}
+
+/* Medium screens: keep the full menu bar, just tighter so it fits */
+@media (min-width: 901px) and (max-width: 1299px) {
+  .home-nav .nav-links .nav-auth {
+    display: none; /* Log In / Sign Up are already in the hero */
+  }
+}
+@media (min-width: 901px) and (max-width: 1199px) {
+  .home-nav .nav-links {
+    gap: 14px;
+  }
+  .home-nav .nav-links a {
+    font-size: 13px;
+  }
+  .home-nav .logo svg {
+    width: 190px;
+  }
+}
+
+/* Tablet / phone: photo moves under the text */
+@media (max-width: 900px) {
+  .cover-hero {
+    min-height: auto;
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+    padding: 36px 5% 40px;
+  }
+  .cover-hero-inner {
+    max-width: none;
+  }
+  .cover-hero-inner p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .cover-btns {
+    justify-content: center;
+  }
+  .cover-hero-img {
+    position: static;
+    justify-content: center;
+    margin-top: 30px;
+  }
+  .cover-hero-img img {
+    width: min(360px, 90vw);
+    border-radius: 16px;
+    -webkit-mask-image: none;
+    mask-image: none;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  }
+}
+@media (max-width: 640px) {
+  .cover-hero-inner h1 {
+    font-size: 32px;
+  }
+}

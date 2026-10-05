@@ -5,147 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FarmLink - Farmers. Buyers. Connected.</title>
     <link rel="stylesheet" href="home.css" />
-    <style>
-      html {
-        scroll-behavior: smooth;
-      }
-
-      .cover-hero {
-        position: relative;
-        min-height: 86vh;
-        display: flex;
-        align-items: center;
-        background:
-          linear-gradient(
-            180deg,
-            rgba(10, 30, 15, 0.55),
-            rgba(10, 30, 15, 0.72)
-          ),
-          url("imgs/project.png");
-        background-size: cover;
-        background-position: center;
-      }
-      .cover-hero-inner {
-        position: relative;
-        z-index: 1;
-        padding: 0 5%;
-        max-width: 720px;
-        color: #fff;
-      }
-      .cover-hero-inner h1 {
-        font-size: 46px;
-        line-height: 1.15;
-        margin-bottom: 14px;
-        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
-      }
-      .cover-hero-inner p {
-        font-size: 16.5px;
-        color: #eef7ef;
-        margin-bottom: 26px;
-        max-width: 560px;
-      }
-      .cover-btns {
-        display: flex;
-        gap: 14px;
-        flex-wrap: wrap;
-        align-items: center;
-      }
-      .cover-btns .btn-green {
-        padding: 13px 26px;
-        font-size: 15px;
-        border-radius: 9px;
-      }
-      .btn-white-outline {
-        padding: 12px 25px;
-        border: 1.5px solid #fff;
-        color: #fff;
-        border-radius: 9px;
-        font-size: 15px;
-        font-weight: 600;
-      }
-      .btn-white-outline:hover {
-        background: rgba(255, 255, 255, 0.12);
-      }
-      .cover-guest-link {
-        display: inline-block;
-        margin-top: 22px;
-        font-size: 13.5px;
-        color: #dcefe0;
-      }
-      .cover-guest-link:hover {
-        text-decoration: underline;
-      }
-
-      .menu-admin-link {
-        display: block;
-        text-align: center;
-        margin-top: 4px;
-        padding: 9px 10px;
-        font-size: 12px;
-        color: var(--muted);
-        border-top: 1px solid var(--border);
-      }
-      .menu-admin-link:hover {
-        color: var(--green);
-      }
-
-      .trust-strip {
-        display: flex;
-        gap: 24px;
-        flex-wrap: wrap;
-        justify-content: center;
-        padding: 26px 5%;
-        background: var(--card);
-      }
-
-      .section-title {
-        text-align: center;
-        margin-bottom: 8px;
-      }
-      .section-sub {
-        text-align: center;
-        color: var(--muted);
-        max-width: 560px;
-        margin: 0 auto 30px;
-      }
-
-      .cta-band {
-        background: #eefbf1;
-        padding: 50px 5%;
-        text-align: center;
-      }
-      body.dark .cta-band {
-        background: #122417;
-      }
-      .cta-band h2 {
-        margin-bottom: 10px;
-      }
-      .cta-band p {
-        color: var(--muted);
-        margin-bottom: 22px;
-      }
-
-      .site-footer {
-        padding: 26px 5% 34px;
-        text-align: center;
-        color: var(--muted);
-        font-size: 13px;
-        border-top: 1px solid var(--border);
-      }
-      .site-footer a {
-        color: var(--green);
-        font-weight: 600;
-      }
-
-      @media (max-width: 640px) {
-        .cover-hero {
-          min-height: 78vh;
-        }
-        .cover-hero-inner h1 {
-          font-size: 32px;
-        }
-      }
-    </style>
   </head>
   <body>
     <div
@@ -207,7 +66,7 @@
       })();
     </script>
 
-    <header class="navbar">
+    <header class="navbar home-nav">
       <a class="logo" href="#hero">
         <svg
           width="180"
@@ -270,6 +129,19 @@
           </text>
         </svg>
       </a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="#hero" class="active">Home</a>
+        <a href="browse-Product.html">Browse Products</a>
+        <a href="#farmers">For Farmers</a>
+        <a href="#buyers">For Buyers</a>
+        <a href="#how">How It Works</a>
+        <a href="#about">About Us</a>
+        <a href="#contact">Contact Us</a>
+        <div class="nav-auth">
+          <a href="login_register.html" class="btn-outline">Log In</a>
+          <a href="login_register.html" class="btn-green">Sign Up</a>
+        </div>
+      </nav>
       <div class="menu-dropdown" id="mainMenu">
         <button
           type="button"
@@ -315,6 +187,13 @@
         <a href="browse-Product.html" class="cover-guest-link"
           >Just want to look around? Browse products as a guest →</a
         >
+      </div>
+
+      <div class="cover-hero-img">
+        <img
+          src="imgs/project.png"
+          alt="Farmer handing a basket of fresh vegetables to a buyer"
+        />
       </div>
     </section>
 
@@ -459,10 +338,10 @@
         Reach out and we'll get back to you as soon as we can.
       </p>
       <div class="contact-grid">
-        <a href="mailto:farmlink@company.com" class="contact-card">
+        <a href="mailto:magumodestiny@gmail.com" class="contact-card">
           <div class="contact-icon">✉️</div>
           <h3>Email Us</h3>
-          <p>farmlink@company.com</p>
+          <p>magumodestiny@gmail.com</p>
         </a>
         <a href="tel:+27115550148" class="contact-card">
           <div class="contact-icon">📞</div>
@@ -483,7 +362,7 @@
 
     <footer class="site-footer">
       © 2026 FarmLink. Farmers. Buyers. Connected. ·
-      <a href="mailto:farmlink@company.com">farmlink@company.com</a>
+      <a href="mailto:magumodestiny@gmail.com">magumodestiny@gmail.com</a> ·
     </footer>
 
     <script src="farmlink-api.js"></script>
