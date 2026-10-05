@@ -1589,3 +1589,112 @@ body.dark .cta-band {
     font-size: 32px;
   }
 }
+
+/* ===== Saved products (heart / wishlist) ===== */
+.saved-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  margin-left: 6px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  vertical-align: middle;
+}
+.saved-count[hidden] { display: none; }
+
+.heart[role="button"]:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+.heart.liked { animation: heart-pop .28s ease; }
+@keyframes heart-pop {
+  0%   { transform: scale(.7); }
+  60%  { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+.saved-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted);
+}
+.saved-empty .saved-empty-icon { font-size: 52px; margin-bottom: 8px; }
+.saved-empty h3 { color: var(--text); margin-bottom: 6px; }
+.saved-empty p { margin-bottom: 18px; }
+
+.saved-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translate(-50%, 20px);
+  background: #0f172a;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease;
+  z-index: 1000;
+}
+.saved-toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ===== Navbar fit: keep every link on ONE line, scale down on smaller desktops ===== */
+.navbar .logo,
+.navbar .nav-right { flex-shrink: 0; }
+
+.nav-links a {
+  white-space: nowrap;
+  letter-spacing: 0;
+}
+
+/* 1280px – 1399px: slightly tighter */
+@media (min-width: 1280px) and (max-width: 1399px) {
+  .navbar { padding-left: 3%; padding-right: 3%; }
+  .navbar .logo svg { width: 200px; }
+  .nav-links { gap: 16px; }
+  .nav-links a { font-size: 13.5px; }
+}
+
+/* 1101px – 1279px: smaller text, avatar-only profile chip */
+@media (min-width: 1101px) and (max-width: 1279px) {
+  .navbar { padding-left: 3%; padding-right: 3%; }
+  .navbar .logo svg { width: 185px; }
+  .nav-right { gap: 10px; }
+  .nav-links { gap: 14px; }
+  .nav-links a { font-size: 13px; }
+  .profile-chip { padding: 4px; }
+  .profile-chip .profile-info { display: none; }
+}
+
+/* 901px – 1100px: not enough room for 8 links, so use the hamburger menu */
+@media (min-width: 901px) and (max-width: 1100px) {
+  .nav-links { display: none; }
+  .menu-dropdown { display: block; }
+}
+
+/* Saved page spacing (same side padding as the other pages) */
+#saved .container { padding: 40px 5%; }
+
+/* ===== Filled red heart when a product is saved ===== */
+.product-card .heart.liked {
+  color: #ef4444 !important;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, .35);
+}
+.product-card .heart.liked svg,
+.product-card .heart.liked svg * {
+  fill: #ef4444 !important;
+  stroke: #ef4444 !important;
+}
+.product-card .heart:not(.liked) svg,
+.product-card .heart:not(.liked) svg * {
+  fill: none;
+}

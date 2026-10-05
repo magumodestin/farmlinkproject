@@ -109,6 +109,7 @@
           <a href="browse-Product.html" class="nav-link" data-page="browse"
             >Browse Products</a
           >
+          <a href="#" class="nav-link" data-page="saved">Saved<span class="saved-count" hidden></span></a>
           <a href="#" class="nav-link" data-page="farmers">For Farmers</a>
           <a href="#" class="nav-link" data-page="buyers">For Buyers</a>
           <a href="#" class="nav-link" data-page="how">How It Works</a>
@@ -155,6 +156,7 @@
             <a href="browse-Product.html" class="nav-link" data-page="browse"
               >Browse Products</a
             >
+          <a href="#" class="nav-link" data-page="saved">Saved<span class="saved-count" hidden></span></a>
             <a href="#" class="nav-link" data-page="farmers">For Farmers</a>
             <a href="#" class="nav-link" data-page="buyers">For Buyers</a>
             <a href="#" class="nav-link" data-page="how">How It Works</a>
@@ -730,6 +732,23 @@
         </p>
       </div>
     </div>
+    <div id="saved" class="page">
+      <div class="container">
+        <div class="section-header">
+          <h2>❤️ Saved Products</h2>
+          <span class="muted" id="savedPageCount"></span>
+        </div>
+        <div class="product-grid" id="savedGrid"></div>
+        <div class="saved-empty" id="savedEmpty" style="display: none">
+          <div class="saved-empty-icon">🤍</div>
+          <h3>No saved products yet</h3>
+          <p>Tap the heart on any product to save it here for later.</p>
+          <button type="button" class="btn-primary" id="savedBrowseBtn">
+            Browse products
+          </button>
+        </div>
+      </div>
+    </div>
     <div id="livestock" class="page">
       <div class="container" style="padding-top: 50px">
         <div style="text-align: center">
@@ -1160,6 +1179,7 @@
     <script src="theme.js"></script>
     <script src="home.js"></script>
     <script src="dashboard.js"></script>
+    <script src="wishlist.js"></script>
     <script src="nav-auth.js"></script>
     <script src="account-panel.js"></script>
     <script>
