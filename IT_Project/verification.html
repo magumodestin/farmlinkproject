@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verify Account</title>
+    <link rel="stylesheet" href="verification.css" />
+    <link rel="stylesheet" href="forgotpass.css" />
+    <link rel="stylesheet" href="reset-flow.css" />
+  </head>
+  <body>
+    <header class="navbar">
+      <a class="logo" href="home.html">
+        <svg width="180" viewBox="0 0 680 200" role="img" xmlns="http://www.w3.org/2000/svg">
+          <title>FarmLink</title>
+          <g transform="translate(210, 60)">
+            <path d="M30 70 C10 50, 0 20, 30 5 C60 20, 50 50, 30 70Z" fill="#24B161" />
+            <path d="M30 68 C30 45, 30 20, 30 6" fill="none" stroke="#1a8a45" stroke-width="1.2" />
+            <path d="M30 45 C22 38, 14 36, 10 32" fill="none" stroke="#1a8a45" stroke-width="0.8" />
+            <path d="M30 40 C38 33, 44 31, 48 28" fill="none" stroke="#1a8a45" stroke-width="0.8" />
+            <path d="M30 70 C28 80, 25 85, 22 92" fill="none" stroke="#24B161" stroke-width="2" stroke-linecap="round" />
+          </g>
+          <text x="270" y="108" font-family="cursive" font-size="28" font-weight="700" class="logo-text-main" letter-spacing="-0.5">
+            Farmlink
+          </text>
+        </svg>
+      </a>
+    </header>
+
+    <section>
+      <div class="verifybox">
+        <h1>Verify Your Account</h1>
+        <p>We sent a verification code to</p>
+        <p><strong id="verifyEmail"></strong></p>
+        <p>Enter the code below.</p>
+
+        <div class="code-row">
+          <input type="text" maxlength="1" inputmode="numeric" autocomplete="one-time-code" />
+          <input type="text" maxlength="1" inputmode="numeric" />
+          <input type="text" maxlength="1" inputmode="numeric" />
+          <input type="text" maxlength="1" inputmode="numeric" />
+          <input type="text" maxlength="1" inputmode="numeric" />
+          <input type="text" maxlength="1" inputmode="numeric" />
+        </div>
+
+        <button type="button" class="verify-btn" id="verifyBtn">Verify Code</button>
+        <button type="button" class="link-btn" id="resendBtn">Resend code</button>
+        <div id="verifyFeedback" class="reset-feedback" style="display: none"></div>
+        <a class="link-btn" href="forgotpass.html" style="text-align:center">Use a different email</a>
+      </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabaseClient.js"></script>
+    <script src="verification.js"></script>
+  </body>
+</html>

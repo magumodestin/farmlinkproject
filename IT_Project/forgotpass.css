@@ -1,92 +1,248 @@
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    margin: 0;
-    min-height: 100vh;
-    font-size: large;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  font-size: large;
 
-    background-image: url("imgs/project.png");
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: contain;
-    background-color: #e7e5e1;
+  background-image: url("imgs/project.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+  background-color: #e7e5e1;
 }
 
 .page-wrap {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem 1rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
 }
 
 .heading1 {
-    color: red;
-    margin-bottom: 1.5rem;
-    font-size: 2.5rem;
-    text-align: center;
-    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6), 0 0 12px rgba(255, 255, 255, 0.8);
+  color: red;
+  margin-bottom: 1.5rem;
+  font-size: 2.5rem;
+  text-align: center;
+  text-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.6),
+    0 0 12px rgba(255, 255, 255, 0.8);
 }
 
 .form-card {
-    max-width: 560px;
-    width: 100%;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-    padding: 2.8rem;
-    text-align: center;
+  max-width: 560px;
+  width: 100%;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  padding: 2.8rem;
+  text-align: center;
 }
 
 .subtext {
-    color: #555;
-    font-size: large;
-    margin-bottom: 1.8rem;
+  color: #555;
+  font-size: large;
+  margin-bottom: 1.8rem;
 }
 
 form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
 }
 
 label {
-    text-align: left;
-    font-size: large;
-    color: #333;
+  text-align: left;
+  font-size: large;
+  color: #333;
 }
 
 input[type="email"] {
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 16px;
-    font-size: large;
-    width: 100%;
-    font-family: inherit;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 16px;
+  font-size: large;
+  width: 100%;
+  font-family: inherit;
 }
 
 input[type="email"]:focus {
-    outline: none;
-    border-color: rgb(15, 248, 7);
+  outline: none;
+  border-color: rgb(15, 248, 7);
 }
 
 .reset-btn {
-    background-color: rgb(15, 248, 7);
-    color: #fff;
-    padding: 18px;
-    font-size: large;
-    font-family: inherit;
-    border: none;
-    border-radius: 40px;
-    cursor: pointer;
-    box-shadow: 0 6px 16px rgba(22, 163, 74, 0.25);
-    transition: background-color 0.2s ease;
+  background-color: #3e9257;
+  color: #fff;
+  padding: 18px;
+  font-size: large;
+  font-family: inherit;
+  border: none;
+  border-radius: 40px;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(22, 163, 74, 0.25);
+  transition: background-color 0.2s ease;
 }
 
 .reset-btn:hover {
-    background-color: red;
+  background-color: red;
+}
+
+/* Small extras shared by forgotpass / verification / newpassword pages */
+.reset-feedback {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+.reset-feedback.error {
+  background: #fdecea;
+  color: #b3261e;
+}
+.reset-feedback.success {
+  background: #e6f6ec;
+  color: #1a7f45;
+}
+.reset-feedback.info {
+  background: #eef3fb;
+  color: #31507a;
+}
+
+.verifybox .code-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 16px 0;
+}
+.verifybox .code-row input {
+  width: 44px;
+  height: 52px;
+  text-align: center;
+  font-size: 1.4rem;
+  border: 1px solid #c8c8c8;
+  border-radius: 8px;
+}
+.verifybox .code-row input:focus {
+  outline: 2px solid #24b161;
+  border-color: #24b161;
+}
+
+.verify-btn {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  margin: 8px auto;
+  padding: 12px;
+  border: 0;
+  border-radius: 8px;
+  background: #24b161;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.verify-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.link-btn {
+  display: block;
+  margin: 8px auto 0;
+  background: none;
+  border: 0;
+  color: rgb(15, 248, 7);
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: underline;
+}
+.link-btn:disabled {
+  color: #888;
+  text-decoration: none;
+  cursor: not-allowed;
+}
+
+/* new password page */
+.pw-field {
+  position: relative;
+  margin-bottom: 12px;
+}
+.pw-field input {
+  width: 100%;
+  padding-right: 44px;
+  box-sizing: border-box;
+}
+.pw-field .toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+.pw-hint {
+  font-size: 0.85rem;
+  margin: 0 0 8px;
+  min-height: 1.2em;
+}
+.pw-hint.bad {
+  color: #b3261e;
+}
+.pw-hint.good {
+  color: #1a7f45;
+}
+
+.pw-field {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.pw-field input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 48px 14px 18px;
+  font-size: 1rem;
+  color: #222;
+  background: #f6f8f7;
+  border: 2px solid #e1e6e3;
+  border-radius: 999px;
+  outline: none;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    background 0.2s;
+}
+
+.pw-field input::placeholder {
+  color: #9aa5a0;
+}
+
+.pw-field input:hover {
+  border-color: #b9c7bf;
+}
+
+.pw-field input:focus {
+  background: #fff;
+  border-color: #24b161;
+  box-shadow: 0 0 0 4px rgba(36, 177, 97, 0.18);
+}
+
+.pw-field .toggle-password {
+  right: 16px;
+  opacity: 0.7;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+}
+
+.pw-field .toggle-password:hover {
+  opacity: 1;
+  transform: translateY(-50%) scale(1.1);
 }
