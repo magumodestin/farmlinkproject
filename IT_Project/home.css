@@ -1676,3 +1676,107 @@ body.dark .cta-band {
 .product-card .heart {
   z-index: 5;
 }
+
+
+/* ==========================================================
+   RESPONSIVE FIX - phones / small screens
+   (keep this block at the very bottom of the file)
+   ========================================================== */
+
+/* No sideways scrolling (clip keeps the sticky navbar working) */
+html { overflow-x: hidden; }
+body { max-width: 100%; overflow-x: clip; }
+img, svg, video, iframe, .leaflet-container { max-width: 100%; }
+
+/* ---------- Tablet and phone ---------- */
+@media (max-width: 900px) {
+  .navbar {
+    gap: 8px;
+    padding: 10px 3%;
+  }
+  .navbar .logo {
+    flex-shrink: 1;
+    min-width: 0;
+  }
+  .navbar .nav-right {
+    flex-shrink: 1;     /* was 0 above, which caused the overflow */
+    min-width: 0;
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+  .navbar .logo svg {
+    width: 170px;
+  }
+}
+
+/* ---------- Phone ---------- */
+@media (max-width: 600px) {
+  .navbar .logo svg {
+    width: 120px;
+  }
+
+  /* Smaller Log In / Sign Up buttons */
+  .nav-right .btn-outline,
+  .nav-right .btn-green {
+    padding: 7px 12px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .search-icon {
+    width: 34px;
+    height: 34px;
+  }
+  .dark-toggle {
+    font-size: 19px;
+  }
+  .menu-trigger {
+    padding: 8px 10px;
+  }
+  .menu-trigger .menu-label,
+  .menu-trigger .menu-caret {
+    display: none;
+  }
+
+  /* Search box opens inside the screen */
+  .search-input.active {
+    width: min(200px, 70vw);
+  }
+
+  /* Menu panel never wider than the screen */
+  .menu-panel {
+    min-width: 0;
+    width: 230px;
+    max-width: calc(100vw - 20px);
+  }
+  .filter-panel {
+    left: 0;
+    width: min(340px, calc(100vw - 20px));
+  }
+
+  /* 17 category buttons become one swipeable row */
+  .filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 6px;
+  }
+  .filters::-webkit-scrollbar { display: none; }
+  .filter-btn {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .container { padding: 30px 4%; }
+  .product-grid { gap: 16px; }
+  .contact-card { overflow-wrap: anywhere; }
+  .site-footer { overflow-wrap: anywhere; }
+}
+
+/* ---------- Small phones ---------- */
+@media (max-width: 400px) {
+  .navbar .logo svg { width: 105px; }
+  /* Log In and Sign Up both go to login_register.html, so keep one */
+  .nav-right .btn-outline.guest-only { display: none; }
+}
