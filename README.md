@@ -92,9 +92,3 @@ The site is deployed on Vercel. Set the Root Directory to the folder that contai
 
 - Email: magumodestiny@gmail.com
 - GitHub: https://github.com/magumodestin
-
-## Author
-
-Destine Magumo
-
-&copy; 2026 FarmLink. All rights reserved.
