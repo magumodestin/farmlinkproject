@@ -2,7 +2,7 @@
 
 **Farmers. Buyers. Connected.**
 
-FarmLink (also known as RuralMarket Connector) is a web platform that connects farmers directly with buyers. It removes the middlemen so farmers earn fairer prices and buyers get fresher products. Sellers list what they grow or offer, buyers browse and order, and local drivers handle delivery.
+FarmLink is a web platform that connects farmers directly with buyers. It removes the middlemen so farmers earn fairer prices and buyers get fresher products. Sellers list what they grow or offer, buyers browse and order, and local drivers handle delivery.
 
 **Live site:** https://farmlinkproject.vercel.app/
 
