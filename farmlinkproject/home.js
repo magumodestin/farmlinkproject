@@ -1013,7 +1013,7 @@ const PRODUCT_PHOTO = {
   mangoes:
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ79NfgiiZ-LJ5MzshzYZ0qUnVCvDptqAM88kDp3QbKKQ&s=10",
   grapes:
-    "https://commons.wikimedia.org/wiki/Special:FilePath/Table_grapes_on_white.png",
+    "https://www.farmersweekly.co.za/wp-content/uploads/2026/10/Table-grapes-696x464.jpg.webp",
   watermelon:
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQx4EZwIFao7x-aaabycoIZGKll-V4wflH3b6J5nVwj0g&s=10",
   avocado:
