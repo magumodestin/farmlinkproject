@@ -1003,7 +1003,8 @@ const PRODUCT_PHOTO = {
     "https://commons.wikimedia.org/wiki/Special:FilePath/Cucurbita_moschata_Butternut_2012_G1.jpg",
   beetroot:
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSckD7kZFi9SjE8eM3HEq4Ci77fyoVJzyK785UM63_nBw&s",
-  bananas: "imgs/bananas.jpg",
+  bananas:
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhGkv-aMySr4eZOqkeJ0JhbGsxiY9vKf4WucslGCUlmg&s",
   apples: "imgs/apples.jpeg",
   oranges:
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSksdZ8gob_W18mvKRGqVURJeQo-OG1dYDCF1jpPxGCRg&s=10",
