@@ -54,3 +54,46 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('logoutBtn')?.addEventListener('click', logout);
 });
+
+
+// Collapsible floating dock (hamburger)
+document.addEventListener('DOMContentLoaded', () => {
+  const dock = document.getElementById('featureDock');
+  const toggle = document.getElementById('dockToggle');
+  if (!dock || !toggle) return;
+
+  const setOpen = (open) => {
+    dock.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Close quick actions' : 'Open quick actions');
+  };
+
+  toggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setOpen(!dock.classList.contains('open'));
+  });
+
+  // Close after choosing an action, on outside click, or on Escape
+  dock.querySelectorAll('.dock-menu button').forEach((btn) =>
+    btn.addEventListener('click', () => setOpen(false))
+  );
+  document.addEventListener('click', (e) => {
+    if (!dock.contains(e.target)) setOpen(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setOpen(false);
+  });
+
+  // Mirror the cart count onto the hamburger so it stays visible when collapsed
+  const cartCount = document.getElementById('dockCartCount');
+  const toggleBadge = document.getElementById('dockToggleBadge');
+  if (cartCount && toggleBadge) {
+    const sync = () => {
+      const n = cartCount.textContent.trim();
+      toggleBadge.textContent = n;
+      toggleBadge.hidden = !n || n === '0';
+    };
+    sync();
+    new MutationObserver(sync).observe(cartCount, { childList: true, characterData: true, subtree: true });
+  }
+});

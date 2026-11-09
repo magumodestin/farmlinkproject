@@ -961,7 +961,8 @@
       </div>
     </div>
 
-    <div class="feature-dock">
+    <div class="feature-dock" id="featureDock">
+      <div class="dock-menu" id="dockMenu">
       <div class="dock-item" style="animation-delay: 0.15s">
         <button
           class="dock-icon-btn"
@@ -1063,6 +1064,19 @@
           </svg>
         </button>
       </div>
+      </div>
+
+      <button
+        class="dock-toggle"
+        id="dockToggle"
+        type="button"
+        aria-label="Open quick actions"
+        aria-expanded="false"
+        aria-controls="dockMenu"
+      >
+        <span class="dock-bars" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="dock-badge" id="dockToggleBadge" hidden>0</span>
+      </button>
     </div>
 
     <div class="modal-backdrop" id="cartModal">

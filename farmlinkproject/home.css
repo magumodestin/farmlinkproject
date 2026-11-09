@@ -1780,3 +1780,57 @@ img, svg, video, iframe, .leaflet-container { max-width: 100%; }
   /* Log In and Sign Up both go to login_register.html, so keep one */
   .nav-right .btn-outline.guest-only { display: none; }
 }
+
+/* ===== Collapsible floating dock (hamburger) ===== */
+.feature-dock{align-items:flex-end;gap:0}
+.dock-menu{
+  display:flex;flex-direction:column;align-items:flex-end;gap:12px;
+  margin-bottom:12px;pointer-events:none;
+}
+.dock-menu .dock-item{
+  animation:none;
+  opacity:0;transform:translateY(16px) scale(.6);
+  transition:opacity .22s ease, transform .28s cubic-bezier(.34,1.56,.64,1);
+}
+.feature-dock.open .dock-menu{pointer-events:auto}
+.feature-dock.open .dock-menu .dock-item{opacity:1;transform:none}
+/* stagger: item nearest the toggle pops first */
+.feature-dock.open .dock-menu .dock-item:nth-last-child(1){transition-delay:.02s}
+.feature-dock.open .dock-menu .dock-item:nth-last-child(2){transition-delay:.07s}
+.feature-dock.open .dock-menu .dock-item:nth-last-child(3){transition-delay:.12s}
+.feature-dock.open .dock-menu .dock-item:nth-last-child(4){transition-delay:.17s}
+
+.feature-dock .dock-toggle{
+  position:relative;width:56px;height:56px;padding:0;border:0;border-radius:50%;
+  background:var(--green);color:#fff;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;
+  box-shadow:0 10px 26px rgba(22,163,74,.45);
+  transition:transform .15s ease, box-shadow .15s ease, background .2s ease;
+}
+.feature-dock .dock-toggle:hover{transform:scale(1.06)}
+.feature-dock .dock-toggle:active{transform:scale(.96)}
+.dock-bars{position:relative;width:22px;height:16px;display:block}
+.dock-bars i{
+  position:absolute;left:0;width:100%;height:2.5px;border-radius:2px;background:currentColor;
+  transition:transform .25s ease, opacity .2s ease, top .25s ease;
+}
+.dock-bars i:nth-child(1){top:0}
+.dock-bars i:nth-child(2){top:6.75px}
+.dock-bars i:nth-child(3){top:13.5px}
+.feature-dock.open .dock-bars i:nth-child(1){top:6.75px;transform:rotate(45deg)}
+.feature-dock.open .dock-bars i:nth-child(2){opacity:0}
+.feature-dock.open .dock-bars i:nth-child(3){top:6.75px;transform:rotate(-45deg)}
+.feature-dock.open .dock-toggle .dock-badge{display:none}
+
+@media (prefers-reduced-motion: reduce){
+  .dock-menu .dock-item,.dock-bars i{transition:none}
+}
+
+/* Dock: vertically centered on the right edge; menu pops up above the toggle */
+.feature-dock{
+  top:50%;bottom:auto;
+  transform:translateY(-50%);
+}
+.dock-menu{
+  position:absolute;right:0;bottom:100%;margin-bottom:12px;
+}
