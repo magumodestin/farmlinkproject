@@ -175,12 +175,15 @@ const ROLE_PAGES = {
   buyer: "dashboard.html",
   seller: "sell-products.html",
   driver: "driver-dashboard.html",
+  admin: "admin.html",
 };
 function redirectForRole(role) {
   return ROLE_PAGES[role] || ROLE_PAGES.buyer;
 }
 
 async function getRole(user) {
+  // Admins are marked in Supabase Auth (app_metadata), which users cannot edit.
+  if (user?.app_metadata?.role === "admin") return "admin";
   const { data } = await supabaseClient
     .from("profiles")
     .select("role")
@@ -266,7 +269,7 @@ async function saveSignupExtras(user) {
       }
     }
     if (p.role === "seller") {
-      update.seller_ref = p.sellerId;
+      update.seller_id = p.sellerId;
       update.farm_location = p.farmLocation;
     }
     if (Object.keys(update).length) {

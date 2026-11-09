@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FarmLink | Admin Dashboard</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="admin.html"><span class="brand-mark">F</span><span>FarmLink</span></a>
+      <div class="sidebar-label">ADMINISTRATION</div>
+      <a class="nav-link active" href="admin.html"><span>▦</span> Seller approvals</a>
+      <div class="sidebar-bottom">
+        <div class="admin-chip"><span class="avatar">A</span><span><strong>Administrator</strong><small id="adminEmail">Signed in</small></span></div>
+        <button id="logoutBtn" class="logout-btn" type="button">Sign out</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div><p class="eyebrow">FARMLINK CONTROL PANEL</p><h1>Seller approvals</h1><p class="subheading">Review seller registrations and manage access to the marketplace.</p></div>
+        <button id="refreshBtn" class="button button-light" type="button">↻ Refresh</button>
+      </header>
+
+      <section class="stats" aria-label="Seller summary">
+        <article class="stat-card"><span class="stat-icon pending-icon">◷</span><div><p>Pending review</p><strong id="pendingCount">—</strong></div></article>
+        <article class="stat-card"><span class="stat-icon approved-icon">✓</span><div><p>Approved</p><strong id="approvedCount">—</strong></div></article>
+        <article class="stat-card"><span class="stat-icon rejected-icon">×</span><div><p>Rejected</p><strong id="rejectedCount">—</strong></div></article>
+        <article class="stat-card"><span class="stat-icon total-icon">♙</span><div><p>Total sellers</p><strong id="totalCount">—</strong></div></article>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div><h2>Registered sellers</h2><p>Check the submitted details before approving an account.</p></div>
+          <label class="search-box"><span>⌕</span><input id="searchInput" type="search" placeholder="Search sellers..." aria-label="Search sellers"></label>
+        </div>
+        <div id="message" class="message" role="status" aria-live="polite"></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>SELLER</th><th>SELLER ID</th><th>FARM LOCATION</th><th>PHONE</th><th>STATUS</th><th>ACTION</th></tr></thead>
+            <tbody id="sellerRows"><tr><td colspan="6" class="empty-cell">Loading seller registrations…</td></tr></tbody>
+          </table>
+        </div>
+        <div class="panel-footer"><span id="resultCount">Loading…</span><span>FarmLink administration</span></div>
+      </section>
+      <p class="footnote">Admin access is controlled by Supabase Auth app metadata, not by a role field users can edit in their own profile.</p>
+    </main>
+  </div>
+
+  <!-- Load your existing Supabase client before admin.js. -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabaseClient.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

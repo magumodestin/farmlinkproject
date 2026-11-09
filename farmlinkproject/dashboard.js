@@ -19,6 +19,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
+  if (session.user.app_metadata?.role === 'admin') {
+    window.location.replace('admin.html');
+    return;
+  }
+
   const { data: profile, error: profileError } = await supabaseClient
     .from('profiles')
     .select('full_name, role, avatar_url')

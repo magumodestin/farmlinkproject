@@ -55,13 +55,16 @@
           .select("role")
           .eq("id", session.user.id)
           .single();
-        const role = data?.role;
+        const role =
+          session.user.app_metadata?.role === "admin" ? "admin" : data?.role;
         window.location.replace(
-          role === "seller"
-            ? "sell-products.html"
-            : role === "driver"
-              ? "driver-dashboard.html"
-              : "dashboard.html",
+          role === "admin"
+            ? "admin.html"
+            : role === "seller"
+              ? "sell-products.html"
+              : role === "driver"
+                ? "driver-dashboard.html"
+                : "dashboard.html",
         );
       })();
     </script>

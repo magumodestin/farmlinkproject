@@ -2112,12 +2112,30 @@ function apiLivestockToCard(l) {
     live: true,
   };
 }
+// Reads seller listings straight from Supabase (tables `products` / `livestock`).
+// Falls back to the old PHP API only if the Supabase client is not on the page.
+async function fetchLiveRows(table) {
+  if (window.supabaseClient) {
+    const { data, error } = await window.supabaseClient
+      .from(table)
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) {
+      console.warn("FarmLink: could not load " + table + ":", error.message);
+      return { [table]: [] };
+    }
+    return { [table]: data || [] };
+  }
+  if (window.FarmLinkAPI)
+    return FarmLinkAPI[table]().catch(() => ({ [table]: [] }));
+  return { [table]: [] };
+}
 async function loadLiveListings() {
-  if (!window.FarmLinkAPI) return;
+  if (!window.supabaseClient && !window.FarmLinkAPI) return;
   try {
     const [prodRes, liveRes] = await Promise.all([
-      FarmLinkAPI.products().catch(() => ({ products: [] })),
-      FarmLinkAPI.livestock().catch(() => ({ livestock: [] })),
+      fetchLiveRows("products"),
+      fetchLiveRows("livestock"),
     ]);
     const liveProducts = (prodRes.products || []).map(apiProductToCard);
     const liveLivestock = (liveRes.livestock || []).map(apiLivestockToCard);

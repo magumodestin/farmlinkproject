@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to FarmLink</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #134e5e, #71b280);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated Background Elements */
+        .leaf {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50% 0 50% 50%;
+            animation: float 10s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Main Container Card */
+        .welcome-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            z-index: 10;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo-area h1 {
+            color: #2e7d32;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .logo-area p {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 30px;
+        }
+
+        /* Action Buttons */
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary {
+            background-color: #2e7d32;
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #1b5e20;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #ffffff;
+            color: #2e7d32;
+            border: 2px solid #2e7d32;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e8f5e9;
+            transform: translateY(-2px);
+        }
+
+        .btn-guest {
+            background-color: transparent;
+            color: #555;
+            border: none;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .btn-guest:hover {
+            color: #2e7d32;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <head>
+        <!-- Include Leaflet CSS in your <head> -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<div class="delivery-calculator-container" style="padding: 20px; max-width: 600px; margin: auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+    <h3>🚚 FarmLink Live Delivery & Pricing</h3>
+    <p>Search your delivery location or click on the map to calculate real-time shipping costs.</p>
+
+    <!-- Search Input -->
+    <div style="margin-bottom: 15px; display: flex; gap: 10px;">
+        <input type="text" id="delivery-search" placeholder="Enter delivery address or area..." style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+        <button id="search-btn" style="padding: 10px 20px; background: #2e7d32; color: white; border: none; border-radius: 6px; cursor: pointer;">Search</button>
+    </div>
+
+    <!-- Real-Time Map Container -->
+    <div id="map" style="height: 300px; width: 100%; border-radius: 8px; margin-bottom: 15px;"></div>
+
+    <!-- Dynamic Pricing Breakdown -->
+    <div id="pricing-panel" style="background: #f1f8e9; padding: 15px; border-radius: 8px; border: 1px solid #c8e6c9;">
+        <p><strong>Selected Location:</strong> <span id="selected-address">None selected</span></p>
+        <p><strong>Distance from Farm/Hub:</strong> <span id="distance-val">0 km</span></p>
+        <p><strong>Estimated Delivery Fee:</strong> <span id="price-val" style="color: #2e7d32; font-size: 1.2rem; font-weight: bold;">R0.00</span></p>
+    </div>
+</div>
+
+<!-- Include Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // 1. Initialize Map (Centered around Gauteng/Pretoria hub example)
+    const farmHubCoord = [-25.7479, 28.2293]; // Example FarmHub Location
+    const map = L.map('map').setView(farmHubCoord, 11);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    let marker = L.marker(farmHubCoord, {draggable: true}).addTo(map)
+        .bindPopup("<b>FarmLink Distribution Hub</b>").openPopup();
+
+    // 2. Pricing Logic Calculation Function
+    function updatePricing(lat, lng, addressText = "Custom Map Pin") {
+        // Calculate straight-line distance using Haversine formula (or approximated)
+        const R = 6371; // Radius of earth in km
+        const dLat = (lat - farmHubCoord[0]) * Math.PI / 180;
+        const dLon = (lng - farmHubCoord[1]) * Math.PI / 180;
+        const a = 
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(farmHubCoord[0] * Math.PI / 180) * Math.cos(lat * Math.PI / 180) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        const distanceKm = R * c;
+
+        // Base fee (R30) + R7 per kilometer
+        const baseFee = 30;
+        const ratePerKm = 7;
+        const totalFee = baseFee + (distanceKm * ratePerKm);
+
+        // Update UI
+        document.getElementById('selected-address').innerText = addressText;
+        document.getElementById('distance-val').innerText = distanceKm.toFixed(2) + " km";
+        document.getElementById('price-val').innerText = "R " + totalFee.toFixed(2);
+    }
+
+    // 3. Click event on map to update destination pin
+    map.on('click', function(e) {
+        const lat = e.latlng.lat;
+        const lng = e.latlng.lng;
+        marker.setLatLng([lat, lng]);
+        updatePricing(lat, lng, `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`);
+    });
+
+    // 4. Search bar functionality using OpenStreetMap Nominatim API (Free Geocoding)
+    document.getElementById('search-btn').addEventListener('click', function() {
+        const query = document.getElementById('delivery-search').value;
+        if (!query) return;
+
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    const lat = parseFloat(data[0].lat);
+                    const lng = parseFloat(data[0].lon);
+                    const displayName = data[0].display_name;
+
+                    map.setView([lat, lng], 13);
+                    marker.setLatLng([lat, lng]);
+                    updatePricing(lat, lng, displayName);
+                } else {
+                    alert('Location not found. Please try a more specific address.');
+                }
+            })
+            .catch(err => console.error('Geocoding error:', err));
+    });
+</script>
+    </head>
+
+</body>
+</html>
+
