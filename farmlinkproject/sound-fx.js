@@ -1,6 +1,6 @@
 (function () {
   // Set to false to turn ALL button sounds off
-  const SOUND_ENABLED = true;
+  const SOUND_ENABLED = false;
 
   let ctx = null;
   function getCtx() {
