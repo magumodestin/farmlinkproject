@@ -1,5 +1,6 @@
-   {
-     "redirects": [
-       { "source": "/", "destination": "/home.html", "permanent": false }
-     ]
-   }
+{
+  "cleanUrls": true,
+  "redirects": [
+    { "source": "/", "destination": "/home", "permanent": false }
+  ]
+}
