@@ -1,4 +1,7 @@
 (function () {
+  // Set to false to turn ALL button sounds off
+  const SOUND_ENABLED = true;
+
   let ctx = null;
   function getCtx() {
     const AC = window.AudioContext || window.webkitAudioContext;
@@ -46,6 +49,7 @@
   };
 
   function playRole(role) {
+    if (!SOUND_ENABLED) return;
     const fn = ROLES[role];
     if (!fn) return;
     try { fn(); } catch (e) {  }
@@ -53,6 +57,7 @@
   window.FarmSound = { play: playRole };
 
   function roleFor(el) {
+    if (el.classList.contains('dock-toggle')) return null; // hamburger stays silent
     if (el.dataset && el.dataset.sound) return el.dataset.sound === 'none' ? null : el.dataset.sound;
     const cl = el.classList;
     if (cl.contains('btn-approve')) return 'approve';
